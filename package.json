@@ -1,0 +1,38 @@
+{
+  "name": "examinator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack  --env dev  --progress --watch",
+    "build:dev": "webpack  --env dev  --progress",
+    "build:prod": "webpack --env prod --progress --profile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "russian_proger",
+  "license": "ISC",
+  "dependencies": {
+    "@vkontakte/vk-bridge": "^2.3.0",
+    "@vkontakte/vkui": "^3.13.2",
+    "@vkontakte/vkui-connect": "^1.5.4",
+    "body-parser": "^1.19.0",
+    "brotli-webpack-plugin": "^1.1.0",
+    "compression-webpack-plugin": "^7.1.1",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-static-gzip": "^2.1.0",
+    "pug": "^3.0.0",
+    "webpack": "^5.11.0",
+    "webpack-cli": "^4.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.0.1",
+    "sass-loader": "^10.1.0",
+    "style-loader": "^2.0.0",
+    "url-loader": "^4.1.1"
+  }
+}
