@@ -1,5 +1,5 @@
 import React from 'react';
-import { EngineProvider } from '../../engine/AppEngine';
+import { CoreProvider } from '../../core/AppEngine';
 
 import { Button, Div, Panel, PanelHeader } from '@vkontakte/vkui';
 
@@ -8,7 +8,7 @@ import { Button, Div, Panel, PanelHeader } from '@vkontakte/vkui';
  * @param {CallableFunction} props.openPanel
  */
 export default function Main(props) {
-  const app = React.useContext(EngineProvider);
+  const app = React.useContext(CoreProvider);
 
   return (
     <Panel id={ props.id }>

@@ -3,7 +3,7 @@ import bridge from "@vkontakte/vk-bridge";
 
 import Event from './Event';
 
-export function AppEngine() {
+export function AppCore() {
   this.init = function init() {
     bridge.send("VKWebAppInit");
   };
@@ -11,4 +11,4 @@ export function AppEngine() {
   this.Event = new Event();
 }
 
-export const EngineProvider = React.createContext(new AppEngine());
+export const CoreProvider = React.createContext(new AppCore());

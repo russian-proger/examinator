@@ -8,10 +8,10 @@ import Schedule from './panels/Schedule';
 import Theory from './panels/Theory';
 import VTheory from './panels/VTheory';
 
-import { EngineProvider } from '../engine/AppEngine';
+import { CoreProvider } from '../core/AppEngine';
 
 export default function AppInterface(_props) {
-  const app = React.useContext(EngineProvider);
+  const app = React.useContext(CoreProvider);
   const [state, setState] = React.useState({
     activePanel: "main",
     activeProps: {},

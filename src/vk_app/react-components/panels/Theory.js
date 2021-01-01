@@ -1,11 +1,11 @@
 import React from 'react';
-import { EngineProvider } from '../../engine/AppEngine';
+import { CoreProvider } from '../../core/AppEngine';
 
 import { Panel, PanelHeader, Group, Cell, Header, List, PanelHeaderBack, CellButton } from '@vkontakte/vkui';
 
 
 export default function Theory(props) {
-  const app = React.useContext(EngineProvider);
+  const app = React.useContext(CoreProvider);
 
   return (
     <Panel id={ props.id }>

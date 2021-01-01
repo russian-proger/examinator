@@ -9,16 +9,16 @@ import '@vkontakte/vkui/dist/vkui.css';
 import AppInterface from './react-components/AppInterface';
 
 // Движок приложения
-import { AppEngine, EngineProvider } from './engine/AppEngine';
+import { AppCore, CoreProvider } from './core/AppEngine';
 
 // Экземпляр класса-одиночки
-const app = new AppEngine();
+const app = new AppCore();
 
 // Рендеринг интерфейса
 ReactDOM.render((
-  <EngineProvider.Provider value={app}>
+  <CoreProvider.Provider value={app}>
     <AppInterface />
-  </EngineProvider.Provider>
+  </CoreProvider.Provider>
 ), document.getElementById("root"));
 
 // Запуск приложения

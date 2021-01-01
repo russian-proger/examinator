@@ -1,10 +1,10 @@
 import React from 'react';
-import { EngineProvider } from '../../engine/AppEngine';
+import { CoreProvider } from '../../core/AppEngine';
 
 import { Panel, PanelHeader, Group, Cell, Header, List, PanelHeaderBack } from '@vkontakte/vkui';
 
 export default function Schedule(props) {
-  const app = React.useContext(EngineProvider);
+  const app = React.useContext(CoreProvider);
 
   return (
     <Panel id={ props.id }>
