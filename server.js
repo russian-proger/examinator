@@ -28,12 +28,10 @@ app.use('/', bodyParser.text({ type: '*/text' }));
 
 app.get('/vk_app', (req, res) => {
   res.render("vk_app", { dev: false });
-  res.end();
 })
 
 app.get('/vk_app_dev', (req, res) => {
   res.render("vk_app", { dev: true });
-  res.end();
 })
 
 

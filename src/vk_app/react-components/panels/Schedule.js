@@ -1,10 +1,14 @@
 import React from 'react';
-import { Panel, PanelHeader, Group, Cell, Header, List } from '@vkontakte/vkui';
+import { EngineProvider } from '../../engine/AppEngine';
 
-export default function Schedule() {
+import { Panel, PanelHeader, Group, Cell, Header, List, PanelHeaderBack } from '@vkontakte/vkui';
+
+export default function Schedule(props) {
+  const app = React.useContext(EngineProvider);
+
   return (
-    <Panel id="schedule">
-      <PanelHeader>Расписание</PanelHeader>
+    <Panel id={ props.id }>
+      <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>Расписание</PanelHeader>
       <Group mode="plain" header={<Header mode="secondary">12 ИВТ</Header>}>
         <List>
           <Cell description="30.12.2020&nbsp;  12:00-15:00">

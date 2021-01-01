@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  // devtool: 'eval-cheap-source-map',
+  devtool: 'eval-cheap-source-map',
   mode: 'development',
   entry: {
     vk_app_dev: "./src/vk_app/index.js"
