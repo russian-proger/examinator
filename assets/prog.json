@@ -1,0 +1,95 @@
+{
+  "subject_name": "Основы программирования",
+  "catalog": [
+    {
+      "title": "Устные вопросы",
+      "problems": [
+        {
+          "question": "Основные понятия языков программирования.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Алгоритм и его свойства. Схемы алгоритма.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Базовые алгоритмические структуры.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Виды языков программирования.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Системы программирования.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Жизненный цикл программного средства.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Структура программы на языке C++. Операторы ввода-вывода.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Типы данных в C++. Оператор присваивания.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Бинарные и унарные операции, математические функции.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Оператор условного перехода. Логические операции.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Оператор множественного выбора.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Операторы циклов с предусловием и постусловием.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Оператор цикла с параметрами.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Операторы break, continue, безусловный переход.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        },
+        {
+          "question": "Массивы. Генератор случайных чисел.",
+          "solution": "sdfkljsldf",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "title": "Практические задания",
+      "problems": [
+        {
+          "question": "Практическое задание на C++. Пользователь задает два катета прямоугольного треугольника. Найти углы в градусах и гипотенузу.",
+          "solution": "#define _USE_MATH_DEFINES\n#include <cmath>\n#include <iostream>\n\nusing namespace std;\n\nint main() {\n\tsetlocale(LC_ALL, \"rus\");\n\tdouble a, b;\n\tcin >> a >> b;\n\t\n\tdouble ang_1 = atan(a / b) / M_PI * 180.;\n\tdouble ang_2 = atan(b / a) / M_PI * 180.;\n\tdouble c = sqrt(a * a + b * b);\n\t\n\tcout\n\t\t<< \"Угол 1: \" << ang_1 << \"°\" << endl\n\t\t<< \"Угол 2: \" << ang_2 << \"°\" << endl\n\t\t<< \"Гипотенуза: \" << c << endl;\n\n\tsystem(\"pause\");\n}",
+          "type": "code"
+        }
+      ]
+    }
+  ]
+}

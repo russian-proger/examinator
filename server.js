@@ -19,6 +19,7 @@ app.set('etag', false);
 app.disable('x-powered-by');
 
 // Виртуализация сетевых директорий
+app.use('/assets', expressStaticGzip(__dirname.concat('/assets')));
 app.use('/static', expressStaticGzip(__dirname.concat('/static')));
 app.use('/dist', expressStaticGzip(__dirname.concat('/dist'), {}));
 
@@ -26,10 +27,12 @@ app.use('/dist', expressStaticGzip(__dirname.concat('/dist'), {}));
 app.use('/', bodyParser.json({ type: '*/json' }));
 app.use('/', bodyParser.text({ type: '*/text' }));
 
+// Публичная версия приложения (стабильная)
 app.get('/vk_app', (req, res) => {
   res.render("vk_app", { dev: false });
 })
 
+// Версия для разработки
 app.get('/vk_app_dev', (req, res) => {
   res.render("vk_app", { dev: true });
 })

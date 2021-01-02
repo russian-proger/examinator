@@ -33,9 +33,7 @@ module.exports = {
         use: [
           'style-loader',
           'css-loader',
-          {
-            loader: 'sass-loader'
-          }
+          'sass-loader',
         ]
       },
       {
