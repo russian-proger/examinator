@@ -12,7 +12,7 @@ export default function Theory(props) {
       <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>Теория</PanelHeader>
       <Group header={ <Header mode="secondary">Дисциплина</Header> }>
         <Cell expandable onClick={ () => app.Event.dispatchEvent("openpanel", ["v-theory", { subject: 'prog'} ]) }>Основы программирования</Cell>
-        {/* <Cell expandable onClick={ () => app.Event.dispatchEvent("openpanel", ["v-theory", { type: 'geom'} ]) }>Начертательная геометрия</Cell> */}
+        <Cell expandable onClick={ () => app.Event.dispatchEvent("openpanel", ["v-theory", { subject: 'geom'} ]) }>Начертательная геометрия</Cell>
         {/* <Cell expandable onClick={ () => app.Event.dispatchEvent("openpanel", ["v-theory", { type: 'math'} ]) }>Математический анализ</Cell> */}
       </Group>
     </Panel>

@@ -44,14 +44,19 @@ function Problem(props) {
       </Div>
       { props.problem.type == "text" &&
         <Div>
-          <Text>Ответ: { props.problem.solution }</Text>
+          {expanded ?
+            <Button size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть ответ</Button>
+            : <Button size="l" mode="primary" onClick={ () => setExpanded(true) }>Показать ответ</Button>}
+          {expanded &&
+            <div style={{ marginTop: 15 }} dangerouslySetInnerHTML={{ __html: props.problem.solution }}></div>
+          }
         </Div>
       }
       { props.problem.type == "code" &&
         <Div>
           { expanded ?
-            <><Text weight="medium">Решение:</Text><Code code={ props.problem.solution } /><Button size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть решение</Button></>
-            : <Div style={{ display: 'flex', justifyContent: 'center' }}><Button size="l" mode="primary" onClick={ () => setExpanded(true) }>Показать решение</Button></Div>}
+            <><Button style={{ marginBottom: 15 }} size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть решение</Button><Code code={ props.problem.solution } /></>
+            : <Button size="l" mode="primary" onClick={ () => setExpanded(true) }>Показать решение</Button>}
         </Div>
       }
     </Group>
