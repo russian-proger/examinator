@@ -4,9 +4,9 @@ import { CoreProvider } from '../../core/AppEngine';
 import './Code.sass';
 
 // Набор ключевых слов
-const keywords = ["using", "namespace", "int", "double", "float", "bool"];
+const keywords = ["using", "namespace", "int", "double", "float", "bool", "long"];
 const constants = ["_USE_MATH_DEFINES", "LC_ALL", "M_PI"];
-const operators = ["for", "if", "while", "do"];
+const operators = ["for", "if", "while", "do", "else"];
 const specials = ["endl"];
 
 /**
