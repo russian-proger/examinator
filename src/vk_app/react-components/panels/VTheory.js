@@ -40,7 +40,7 @@ function Problem(props) {
   return (
     <Group style={{ background: "#f5fafd", borderRight: '2px solid #dbf0f1', borderBottom: '2px solid #dbf0f1' }} separator="hide">
       <Div>
-        <Text weight="medium">Вопрос №{ props.index + 1 }: { props.problem.question }</Text>
+        <Text weight="medium">Вопрос №{ props.index + 1 }: <span dangerouslySetInnerHTML={{ __html: props.problem.question }} /></Text>
       </Div>
       { props.problem.type == "text" &&
         <Div>
@@ -57,6 +57,30 @@ function Problem(props) {
           { expanded ?
             <><Button style={{ marginBottom: 15 }} size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть решение</Button><Code code={ props.problem.answer } /></>
             : <Button size="l" mode="primary" onClick={ () => setExpanded(true) }>Показать решение</Button>}
+        </Div>
+      }
+      { props.problem.type == "input" &&
+        <Div>
+          <Text weight="medium">Ответ: <span dangerouslySetInnerHTML={{ __html: '(' + props.problem.answer.join('|') + ')' }} /></Text>
+        </Div>
+      }
+      { (props.problem.type == "radio" || props.problem.type == "select") &&
+        <Div>
+          { props.problem.options.map((v, i) => (
+            <div style={{ backgroundColor: props.problem.answer.indexOf(i.toString()) != -1 ? "#a5d6a7" : "transparent", borderTop: '1px solid #505050' }} key={ i }>
+              <span dangerouslySetInnerHTML={{ __html: v }} />
+            </div>
+          ))}
+        </Div>
+      }
+      { props.problem.type == "order" &&
+        <Div>
+          { props.problem.answer.split('').map((v, i) => (
+            <div key={ i }>
+              <span dangerouslySetInnerHTML={{ __html: `${i + 1}: ` + props.problem.options[parseInt(v)] }} />
+            </div>
+          ))}
+          <Text style={{ marginTop: 10, borderTop: '2px solid rgb(219 240 241)' }} weight="semibold" color="gray">*В этом задании нужно расположить элементы в правильном порядке</Text>
         </Div>
       }
     </Group>
