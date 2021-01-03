@@ -48,14 +48,14 @@ function Problem(props) {
             <Button size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть ответ</Button>
             : <Button size="l" mode="primary" onClick={ () => setExpanded(true) }>Показать ответ</Button>}
           {expanded &&
-            <div style={{ marginTop: 15 }} dangerouslySetInnerHTML={{ __html: props.problem.solution }}></div>
+            <div style={{ marginTop: 15 }} dangerouslySetInnerHTML={{ __html: props.problem.answer }}></div>
           }
         </Div>
       }
       { props.problem.type == "code" &&
         <Div>
           { expanded ?
-            <><Button style={{ marginBottom: 15 }} size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть решение</Button><Code code={ props.problem.solution } /></>
+            <><Button style={{ marginBottom: 15 }} size="l" mode="secondary" onClick={ () => setExpanded(false) }>Скрыть решение</Button><Code code={ props.problem.answer } /></>
             : <Button size="l" mode="primary" onClick={ () => setExpanded(true) }>Показать решение</Button>}
         </Div>
       }
