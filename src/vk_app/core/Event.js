@@ -14,6 +14,8 @@ export default function Event() {
 
   this.dispatchEvent = (eventType, options=[]) => {
     if (!listeners.has(eventType)) return false;
-    listeners.get(eventType).forEach(v => v(...options));
+    const func = new Array();
+    listeners.get(eventType).forEach(v => func.push(v));
+    func.forEach(v => v(...options));
   }
 }

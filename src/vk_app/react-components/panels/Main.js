@@ -14,7 +14,7 @@ export default function Main(props) {
     <Panel id={ props.id }>
       <PanelHeader>Экзаменатор</PanelHeader>
       <Div>
-        <Button stretched size="xl" onClick={ () => {} }>Пройти тест</Button>
+        <Button stretched size="xl" onClick={ () => app.Event.dispatchEvent("openpanel", ["test-menu"]) }>Пройти тест</Button>
       </Div>
       <Div>
         <Button stretched size="xl" onClick={ () => app.Event.dispatchEvent("openpanel", ["schedule"]) }>Расписание экзаменов</Button>

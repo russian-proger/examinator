@@ -21,7 +21,9 @@ export default function VTheory(props) {
 
   return (
     <Panel id={ props.id }>
-      <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>{ props.subject }</PanelHeader>
+      <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>
+        { materials == null ?  "Загрузка..." : materials.subject_name }
+      </PanelHeader>
       { materials && materials.catalog.map((catalog, c_index) => (
         <Div key={c_index}>
           <Header mode="primary">{ catalog.title }</Header>
