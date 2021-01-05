@@ -52,8 +52,6 @@ export default function AppInterface(_props) {
     setState({ ...state, activePanel, props: { ...state.props, [activePanel]: activeProps }, history: state.history.slice(0, -1).concat(activePanel) });
   }
 
-  console.log(state.props);
-
   // Открытие модального окна
   function openPopout(popout) {
     setState({ ...state, popout });
@@ -86,7 +84,7 @@ export default function AppInterface(_props) {
   }, [state]);
 
   return (
-    <View id="main" activePanel={ state.activePanel } history={ history } onSwipeBack={ closePanel } popout={ state.popout }>
+    <View id="main" activePanel={ state.activePanel } history={ state.history } onSwipeBack={ closePanel } popout={ state.popout }>
       <Main          id="main"           {...(state.props['main']          ?? {})} />
       <Schedule      id="schedule"       {...(state.props['schedule']      ?? {})} />
       <Theory        id="theory"         {...(state.props['theory']        ?? {})} />

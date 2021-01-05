@@ -10,6 +10,7 @@ export function AppCore() {
   this.init = function init() {
     // Сообщаем ВК, что приложение готово к работе
     bridge.send("VKWebAppInit");
+    bridge.send("VKWebAppSetViewSettings", {"status_bar_style": "dark", "action_bar_color": "#fff"});
   };
 
   // Событийный элемент

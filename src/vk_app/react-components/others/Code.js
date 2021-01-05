@@ -38,8 +38,8 @@ export default function Code({ code: _code }) {
 
         // Регулярные выражения
         const reg_strings = /"[^"]*"/gu;
-        const reg_includes = /(?<=#include\s)<[^<>\s]*>/g;
-        const reg_numbers = /(?<!\w)\d+(.)?\d*/g;
+        const reg_includes = /#include\s<[^<>\s]*>/g;
+        const reg_numbers = /[^a-zA-Z_]\d+(\.)?\d*/g;
         const reg_vars = /[a-zA-Z0-9_]+/g;
         const reg_functions = /[a-zA-Z_][a-zA-Z0-9_]*(?=\()/g;
         const reg_directs = /#\w+/g;
@@ -52,16 +52,16 @@ export default function Code({ code: _code }) {
           }
         }
         for (var i = reg_includes.exec(codeLine); i != null; i = reg_includes.exec(codeLine)) {
-          if (mask[i.index] != 0) continue;
+          if (mask[i.index + 9] != 0) continue;
           for (var j = 0; j < i[0].length; ++j) {
-            mask[j + i.index] = 3;
+            mask[j + i.index + 9] = 3;
           }
         }
 
         for (var i = reg_numbers.exec(codeLine); i != null; i = reg_numbers.exec(codeLine)) {
-          if (mask[i.index] != 0) continue;
+          if (mask[i.index + 1] != 0) continue;
           for (var j = 0; j < i[0].length; ++j) {
-            mask[j + i.index] = 1;
+            mask[j + i.index + 1] = 1;
           }
         }
 

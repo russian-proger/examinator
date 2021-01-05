@@ -31,6 +31,18 @@ export default function SingleTesting(props) {
     });
   }, []);
 
+  React.useLayoutEffect(() => {
+    if (state.replied) {
+      const handler = ({ key }) => {
+        if (key == "Enter") {
+          next();
+        }
+      };
+      window.addEventListener("keydown", handler);
+      return () => window.removeEventListener("keydown", handler);
+    }
+  }, [state.replied]);
+
   function complete() {
     app.Event.dispatchEvent('switchpanel', ["single-result", { ...state, tasksCount: state.results.length, subject: props.subject }]);
   }
@@ -155,6 +167,16 @@ function T_Order({ problem, id, onReply, replied }) {
     onReply(answer.join(''), answer.join('') == problem.answer);
   }
 
+  React.useLayoutEffect(() => {
+    const handler = ({ key }) => {
+      if (key == "Enter" && answer != "") {
+        reply();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [answer]);
+
   return (
   <>
     <FormLayout>
@@ -199,6 +221,16 @@ function T_Input({ problem, id, onReply, replied }) {
     onReply(answer, problem.answer.indexOf(answer) != -1);
   }
 
+  React.useLayoutEffect(() => {
+    const handler = ({ key }) => {
+      if (key == "Enter" && answer != "") {
+        reply();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [answer]);
+
   return (
   <>
     <FormLayout>
@@ -234,6 +266,16 @@ function T_Radio({ problem, id, onReply, replied }) {
     onReply(answer.toString(), answer.toString() == problem.answer);
   }
 
+  React.useLayoutEffect(() => {
+    const handler = ({ key }) => {
+      if (key == "Enter" && answer != "") {
+        reply();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [answer]);
+
   return (
   <>
     <FormLayout>
@@ -266,6 +308,16 @@ function T_Select({ problem, id, onReply, replied }) {
     var res = answer.map((v, i) => i).filter((v, i) => answer[i]).join('');
     onReply(res, res == problem.answer);
   }
+
+  React.useLayoutEffect(() => {
+    const handler = ({ key }) => {
+      if (key == "Enter" && answer.some(v => v)) {
+        reply();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [answer]);
 
   return (
   <>
