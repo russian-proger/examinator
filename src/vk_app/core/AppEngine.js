@@ -4,7 +4,6 @@ import bridge from "@vkontakte/vk-bridge";
 import Event from './Event';
 import FileSystem from './FileSystem';
 import StringSystem from './String';
-import Interface from './Interface';
 
 export function AppCore() {
   this.init = function init() {
@@ -21,9 +20,6 @@ export function AppCore() {
 
   // Дополнительные возможности для работы со строками
   this.String = new StringSystem(this);
-
-  // Упрощение работы интерфейса
-  this.Interface = new Interface(this);
 }
 
 export const CoreProvider = React.createContext(new AppCore());
