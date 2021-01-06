@@ -28,7 +28,7 @@ export default function VTheory(props) {
         <Div key={c_index}>
           <Header mode="primary">{ catalog.title }</Header>
           { catalog.problems.map((problem, p_index) => (
-            <Problem key={p_index} index={ p_index } problem={ problem } />
+            <Problem key={p_index} index={ p_index } problem={ problem } subject={ props.subject } />
           ))}
         </Div>
       ))
@@ -54,6 +54,13 @@ function Problem(props) {
           }
         </Div>
       }
+
+      { props.problem.picture &&
+        <Div style={{ display: 'flex', justifyContent: 'center', width: '100%', boxSizing: 'border-box' }}>
+          <T_Image src={`/static/images/${props.subject}/${props.problem.picture}`} />
+        </Div>
+      }
+
       { props.problem.type == "code" &&
         <Div>
           { expanded ?
@@ -86,5 +93,32 @@ function Problem(props) {
         </Div>
       }
     </Group>
+  )
+}
+
+function T_Image(props) {
+  const [dimensions, setDimensions] = React.useState({ w: 1, h: 1 });
+
+  React.useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      const mxw = document.body.clientWidth * 0.7;
+      const mxh = document.body.clientHeight * 0.35;
+      var nd = { w: img.width, h: img.height };
+      if (nd.w > mxw) {
+        nd.h = mxw * nd.h / nd.w;
+        nd.w = mxw;
+      }
+      if (nd.h > mxh) {
+        nd.w = mxh * nd.w / nd.h;
+        nd.h = mxh;
+      }
+      setDimensions(nd);
+    };
+    img.src = props.src;
+  }, [props.src]);
+
+  return (
+    <img src={ props.src } width={ dimensions.w } height={ dimensions.h } />
   )
 }

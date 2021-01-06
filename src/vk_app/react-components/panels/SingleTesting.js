@@ -120,8 +120,8 @@ export default function SingleTesting(props) {
         </Div>
 
         { state.tasks[state.currentTask][0].picture &&
-          <Div style={{ display: 'flex', justifyContent: 'center' }}>
-            <img src={ `/static/images/${props.subject}/${state.tasks[state.currentTask][0].picture}` } style={{ maxWidth: "50vw" }} />
+          <Div style={{ display: 'flex', justifyContent: 'center', width: '100%', boxSizing: 'border-box' }}>
+            <T_Image src={`/static/images/${props.subject}/${state.tasks[state.currentTask][0].picture}`} />
           </Div>
         }
 
@@ -159,6 +159,33 @@ export default function SingleTesting(props) {
 
     </Panel>
   );
+}
+
+function T_Image(props) {
+  const [dimensions, setDimensions] = React.useState({ w: 1, h: 1 });
+
+  React.useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      const mxw = document.body.clientWidth * 0.7;
+      const mxh = document.body.clientHeight * 0.35;
+      var nd = { w: img.width, h: img.height };
+      if (nd.w > mxw) {
+        nd.h = mxw * nd.h / nd.w;
+        nd.w = mxw;
+      }
+      if (nd.h > mxh) {
+        nd.w = mxh * nd.w / nd.h;
+        nd.h = mxh;
+      }
+      setDimensions(nd);
+    };
+    img.src = props.src;
+  }, [props.src]);
+
+  return (
+    <img src={ props.src } width={ dimensions.w } height={ dimensions.h } />
+  )
 }
 
 function T_Order({ problem, id, onReply, replied }) {
