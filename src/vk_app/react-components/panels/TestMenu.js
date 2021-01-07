@@ -9,7 +9,14 @@ export default function TestMenu(props) {
   const [state, setState] = React.useState({
     subject: 'geom',
     tasksCount: 10,
-    allTasks: false
+    allTasks: false,
+    random: true,
+    types: {
+      order: true,
+      input: true,
+      radio: true,
+      select: true
+    }
   });
 
   function setTasksCount(tasksCount) {
@@ -23,7 +30,10 @@ export default function TestMenu(props) {
       <FormLayout>
         <FormLayoutGroup top={`Количество вопросов: ${ state.allTasks ? "все" : state.tasksCount }`}>
           <Div>
-            <Checkbox onChange={ v => setState({ ...state, allTasks: v.target.checked }) } value={ state.allTasks }>Ответить на все вопросы</Checkbox>
+            <Checkbox onChange={ v => setState({ ...state, allTasks: v.target.checked, random: true }) } checked={ state.allTasks }>Ответить на все вопросы</Checkbox>
+            { state.allTasks &&
+              <Checkbox onChange={ v => setState({ ...state, random: !v.target.checked }) } checked={ !state.random }>По порядку</Checkbox>
+            }
           </Div>
           { !state.allTasks &&
             <Slider onChange={ v => setTasksCount(v) } defaultValue={ state.tasksCount } max={ 50 } step={ 5 } />
@@ -38,11 +48,29 @@ export default function TestMenu(props) {
       }
 
       <FormLayout>
-        <FormLayoutGroup top={`Экзаменационная дисциплина`}>
-          <Radio name="subject" value="geom" defaultChecked>Начертательная геометрия</Radio>
-          <Radio name="subject" value="math" description="Недоступно" disabled>Математический анализ</Radio>
+        <FormLayoutGroup top="Типы заданий">
+          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, radio: v.target.checked } }) } checked={ state.types.radio }>
+            Один вариант ответа
+          </Checkbox>
+          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, select: v.target.checked } }) } checked={ state.types.select }>
+            Несколько вариантов ответа
+          </Checkbox>
+          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, input: v.target.checked } }) } checked={ state.types.input }>
+            Ввод
+          </Checkbox>
+          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, order: v.target.checked } }) } checked={ state.types.order }>
+            Последовательность
+          </Checkbox>
         </FormLayoutGroup>
       </FormLayout>
+
+      <FormLayout>
+        <FormLayoutGroup top={`Экзаменационная дисциплина`}>
+          <Radio name="subject" value="geom" defaultChecked>Начертательная геометрия</Radio>
+        </FormLayoutGroup>
+      </FormLayout>
+
+      <div style={{ height: 70 }} />
 
       <FixedLayout vertical="bottom">
         <Div>

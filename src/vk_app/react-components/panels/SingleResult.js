@@ -125,7 +125,7 @@ function T_Order({ problem, answer, result }) {
           { answer.map((v, i) => (
             <Cell key={v}
             className="order-cell"
-            indicator={
+            before={
               <Counter mode={ problem.answer.indexOf(v.toString()) == i ? "primary" : "prominent" } style={{ marginRight: 10 }}>{ problem.answer.indexOf(v.toString()) + 1 }</Counter>
             }
             >

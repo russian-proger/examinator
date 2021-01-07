@@ -3,7 +3,7 @@ import { CoreProvider } from '../../core/AppEngine';
 
 import './SingleTesting.sass';
 
-import { Panel, PanelHeader, Counter, Group, Cell, PanelHeaderButton, Button, Alert, Div, Progress, Text, FormLayout, FormLayoutGroup, Radio, Checkbox, FixedLayout, Input, List, Footer } from '@vkontakte/vkui';
+import { SSRWrapper, Panel, PanelHeader, Counter, Group, Cell, PanelHeaderButton, Button, Alert, Div, Progress, Text, FormLayout, FormLayoutGroup, Radio, Checkbox, FixedLayout, Input, List, Footer, ANDROID } from '@vkontakte/vkui';
 import Icon28DoorArrowLeftOutline from '@vkontakte/icons/dist/28/door_arrow_left_outline';
 
 import Icon28CancelCircleFillRed from '@vkontakte/icons/dist/28/cancel_circle_fill_red';
@@ -22,7 +22,10 @@ export default function SingleTesting(props) {
 
   React.useEffect(() => {
     app.File.loadFromURL(`/assets/${ props.subject }.json`, true).then(mat => {
-      var tasks = mat.catalog[0].problems.map((v, i) => [v, i]).sort(() => Math.random() - 0.9).sort(() => Math.random() - 0.1).sort(() => Math.random() - 0.5);
+      var tasks = mat.catalog[0].problems.map((v, i) => [v, i]).filter(v => props.types[v[0].type]);
+      if (props.random) {
+        tasks.sort(() => Math.random() - 0.9).sort(() => Math.random() - 0.1).sort(() => Math.random() - 0.5);
+      }
       if (!props.allTasks) {
         tasks = tasks.slice(0, props.tasksCount);
       }
@@ -209,23 +212,25 @@ function T_Order({ problem, id, onReply, replied }) {
     <FormLayout>
       <FormLayoutGroup top="Укажите верный порядок">
         <List>
-          { answer.map((v, i) => (
-            <Cell key={v} draggable={ !replied }
-            className="order-cell"
-            onDragFinish={({ from, to }) => {
-              const draggingList = answer.slice();
-              draggingList.splice(from, 1);
-              draggingList.splice(to, 0, answer[from]);
-              setAnswer(draggingList);
-            }}
-            indicator={ replied ?
-              <Counter mode={ problem.answer.indexOf(v.toString()) == i ? "primary" : "prominent" } style={{ marginRight: 10 }}>{ problem.answer.indexOf(v.toString()) + 1 }</Counter>
-              : null
-            }
-            >
-              <span dangerouslySetInnerHTML={{ __html: problem.options[v] }}></span>
-            </Cell>
-          ))}
+          <SSRWrapper userAgent="android">
+            { answer.map((v, i) => (
+              <Cell platform={ ANDROID } key={v} draggable={ !replied }
+              className={["order-cell", replied ? "order-status" : ""].join(' ')}
+              onDragFinish={({ from, to }) => {
+                const draggingList = answer.slice();
+                draggingList.splice(from, 1);
+                draggingList.splice(to, 0, answer[from]);
+                setAnswer(draggingList);
+              }}
+              before={ replied ?
+                <Counter mode={ problem.answer.indexOf(v.toString()) == i ? "primary" : "prominent" } style={{ marginRight: 10 }}>{ problem.answer.indexOf(v.toString()) + 1 }</Counter>
+                : null
+              }
+              >
+                <span dangerouslySetInnerHTML={{ __html: problem.options[v] }}></span>
+              </Cell>
+            ))}
+          </SSRWrapper >
         </List>
       </FormLayoutGroup>
     </FormLayout>
