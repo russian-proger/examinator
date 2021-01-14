@@ -3,6 +3,15 @@ export default function FileSystem() {
 
   /**
    * 
+   * @param {string} url 
+   * @param {*} value 
+   */
+  this.keep = (url, value) => {
+    cache[url] = value;
+  }
+
+  /**
+   * 
    * @param {string} url path to file
    * @param {Boolean} toCache file will be cached if `toCache` is true
    */
@@ -37,6 +46,7 @@ export default function FileSystem() {
         }).catch(reason => {
           // Файл не удалось получить
           console.warn(reason);
+          resolve(null);
         });
       }
     });

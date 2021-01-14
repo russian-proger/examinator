@@ -7,7 +7,8 @@ module.exports = {
   devtool: 'eval-cheap-source-map',
   mode: 'development',
   entry: {
-    vk_app_dev: "./src/vk_app/index.js"
+    vk_app_dev: "./src/vk_app/index.js",
+    plug: "./src/plug/index.js"
   },
   output: {
     path: path.join(__dirname, "/dist"),

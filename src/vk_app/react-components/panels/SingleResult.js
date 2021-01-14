@@ -29,6 +29,32 @@ export default function TestMenu(props) {
     )
   }
 
+  React.useEffect(() => {
+    if (props.tasksCount == 0) return;
+    const tasks = props.durations.map((v, i) => {
+      let inc = 0;
+      if (v > 10000) {
+        inc = 1;
+      } else if (v > 3000) {
+        inc = 2;
+      } else {
+        inc = 3;
+      }
+      if (!props.results[i]) {
+        inc = 0;
+      }
+      return [props.tasks[i][1], inc];
+    });
+
+    app.File.loadFromURL(`/static/tasks-state/${ UID }`, false).then(c => {
+      tasks.forEach(v => {
+        c[v[0]] += v[1];
+      });
+    });
+
+    app.Network.sendResults({ tasks, tasks_count: props.tasksCount, result: parseInt(score) });
+  }, []);
+
   function onFilter(index, val) {
     var resultsFilter = state.resultsFilter.slice();
     resultsFilter[index] = val;

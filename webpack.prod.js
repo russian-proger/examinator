@@ -6,7 +6,8 @@ const path = require('path');
 module.exports = {
   mode: 'production',
   entry: {
-    vk_app: "./src/vk_app/index.js"
+    vk_app: "./src/vk_app/index.js",
+    plug: "./src/plug/index.js"
   },
   output: {
     path: path.join(__dirname, "/dist"),

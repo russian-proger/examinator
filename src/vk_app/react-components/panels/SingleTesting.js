@@ -17,19 +17,28 @@ export default function SingleTesting(props) {
     currentTask: 0,
     replied: false,
     answers: [],
-    results: []
+    results: [],
+    durations: [],
+    enterTime: Date.now() 
   });
 
   React.useEffect(() => {
-    app.File.loadFromURL(`/assets/${ props.subject }.json`, true).then(mat => {
+    Promise.all([
+      app.File.loadFromURL(`/assets/${ props.subject }.json`, true),
+      app.File.loadFromURL(`/static/tasks-state/${ UID }`, false)
+    ]).then(([mat, _tState]) => {
       var tasks = mat.catalog[0].problems.map((v, i) => [v, i]).filter(v => props.types[v[0].type]);
+      var tState = (_tState ?? new Array(mat.catalog[0].problems.length).fill(0));
+      if (typeof tState == "string") {
+        tState = tState.split(' ');
+        app.File.keep(`/static/tasks-state/${ UID }`, tState);
+      }
       if (props.random) {
-        tasks.sort(() => Math.random() - 0.9).sort(() => Math.random() - 0.1).sort(() => Math.random() - 0.5);
+        tasks.sort((a, b) => tState[a[1]] == tState[b[1]] ? Math.random() - 0.5 : tState[a[1]] - tState[b[1]]);
       }
       if (!props.allTasks) {
         tasks = tasks.slice(0, props.tasksCount);
       }
-
       setState({ ...state, tasks, tasksCount: tasks.length });
     });
   }, []);
@@ -47,7 +56,7 @@ export default function SingleTesting(props) {
   }, [state.replied]);
 
   function complete() {
-    app.Event.dispatchEvent('switchpanel', ["single-result", { ...state, tasksCount: state.results.length, subject: props.subject }]);
+    app.Event.dispatchEvent('switchpanel', ["single-result", { ...state, tasksCount: state.results.length, subject: props.subject, durations: state.durations }]);
   }
 
   function openExit() {
@@ -80,14 +89,18 @@ export default function SingleTesting(props) {
   }
 
   function onReply(answer, result) {
-    setState({ ...state, replied: true, answers: [...state.answers, answer], results: [...state.results, result] });
+    setState({ ...state,
+      replied: true,
+      answers: [...state.answers, answer],
+      results: [...state.results, result],
+      durations: [...state.durations, Date.now() - state.enterTime] });
   }
 
   function next() {
     if (state.currentTask + 1 == state.tasksCount) {
       complete();
     } else {
-      setState({ ...state, currentTask: state.currentTask + 1, replied: false });
+      setState({ ...state, currentTask: state.currentTask + 1, replied: false, enterTime: Date.now() });
     }
   }
 
@@ -291,7 +304,9 @@ function T_Input({ problem, id, onReply, replied }) {
 }
 
 function T_Radio({ problem, id, onReply, replied }) {
+  const [conv] = React.useState(new Array(problem.options.length).fill(0).map((v, i) => i).sort(() => Math.random() - 0.5));
   const [answer, setAnswer] = React.useState(null);
+  console.log(conv);
 
   function reply() {
     if (answer == null) return;
@@ -300,7 +315,7 @@ function T_Radio({ problem, id, onReply, replied }) {
 
   React.useLayoutEffect(() => {
     const handler = ({ key }) => {
-      if (key == "Enter" && answer != "") {
+      if (key == "Enter" && answer != null) {
         reply();
       }
     };
@@ -312,12 +327,15 @@ function T_Radio({ problem, id, onReply, replied }) {
   <>
     <FormLayout>
       <FormLayoutGroup top="Выберите один правильный ответ">
-        { problem.options.map((v, i) => (
-          <Radio name="test" key={ i } checked={ answer == i }
-            onChange={ (ev) => ev.target.checked && setAnswer(replied ? answer : i) }
-            style={{ background: replied && problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}
-          ><span dangerouslySetInnerHTML={{ __html: v }}></span></Radio>
-        ))
+        { problem.options.map((v, _i) => {
+          const i = conv[_i];
+          return (
+            <Radio name="test" key={ i } checked={ answer == i }
+              onChange={ (ev) => ev.target.checked && setAnswer(replied ? answer : i) }
+              style={{ background: replied && problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}
+            ><span dangerouslySetInnerHTML={{ __html: problem.options[i] }}></span></Radio>
+          );
+        })
         }
       </FormLayoutGroup>
     </FormLayout>
@@ -334,6 +352,7 @@ function T_Radio({ problem, id, onReply, replied }) {
 }
 
 function T_Select({ problem, id, onReply, replied }) {
+  const [conv] = React.useState(new Array(problem.options.length).fill(0).map((v, i) => i).sort(() => Math.random() - 0.5));
   const [answer, setAnswer] = React.useState(new Array(problem.options.length).fill(false));
 
   function reply() {
@@ -355,13 +374,16 @@ function T_Select({ problem, id, onReply, replied }) {
   <>
     <FormLayout>
       <FormLayoutGroup top="Выберите несколько правильных ответов">
-      { problem.options.map((v, i) => (
-          <Checkbox key={ i } checked={ answer[i] }
-            onChange={ (ev) => setAnswer([...answer.slice(0, i), replied ? answer[i] : ev.target.checked, ...answer.slice(i + 1)]) }
-            style={{ background: replied && problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}>
-              <span dangerouslySetInnerHTML={{ __html: v }}></span>
-          </Checkbox>
-        ))
+      { problem.options.map((v, _i) => {
+          const i = conv[_i];
+          return (
+            <Checkbox key={ i } checked={ answer[i] }
+              onChange={ (ev) => setAnswer([...answer.slice(0, i), replied ? answer[i] : ev.target.checked, ...answer.slice(i + 1)]) }
+              style={{ background: replied && problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}>
+                <span dangerouslySetInnerHTML={{ __html: problem.options[i] }}></span>
+            </Checkbox>
+          )
+        })
         }
       </FormLayoutGroup>
     </FormLayout>

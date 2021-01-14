@@ -1,3 +1,6 @@
 node_modules
 dist/*
 static
+dev_server.js
+plug.js
+views/temp_vk_app.pug
