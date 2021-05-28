@@ -18,4 +18,6 @@ export default function Network(self) {
   this.sendResults = (data) => {
     this.requestAPI({ action: 'update-results', ...data });
   }
+
+  this.isPaid = (data) => this.requestAPI({ action: 'is-paid', ...data });
 }

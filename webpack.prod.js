@@ -7,7 +7,8 @@ module.exports = {
   mode: 'production',
   entry: {
     vk_app: "./src/vk_app/index.js",
-    plug: "./src/plug/index.js"
+    plug: "./src/plug/index.js",
+    welcome: "./src/welcome/index.js"
   },
   output: {
     path: path.join(__dirname, "/dist"),

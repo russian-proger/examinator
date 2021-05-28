@@ -2,7 +2,7 @@ import React from 'react';
 import { CoreProvider } from '../core/AppEngine';
 
 import bridge from '@vkontakte/vk-bridge';
-import { Root, View, Panel, PanelHeader, PanelHeaderBack, Group, Cell, Header, List } from '@vkontakte/vkui';
+import { AppRoot, View, Panel, PanelHeader, PanelHeaderBack, Group, Cell, Header, List } from '@vkontakte/vkui';
 
 // Панели
 import Main from './panels/Main';
@@ -84,14 +84,16 @@ export default function AppInterface(_props) {
   }, [state]);
 
   return (
-    <View id="main" activePanel={ state.activePanel } history={ state.history } onSwipeBack={ closePanel } popout={ state.popout }>
-      <Main          id="main"           {...(state.props['main']          ?? {})} />
-      <Schedule      id="schedule"       {...(state.props['schedule']      ?? {})} />
-      <Theory        id="theory"         {...(state.props['theory']        ?? {})} />
-      <VTheory       id="v-theory"       {...(state.props['v-theory']       ?? {})} />
-      <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
-      <SingleTesting id="single-testing" {...(state.props['single-testing'] ?? {})} />
-      <SingleResult  id="single-result"  {...(state.props['single-result']  ?? {})} />
-    </View>
+    <AppRoot>
+      <View id="main" activePanel={ state.activePanel } history={ state.history } onSwipeBack={ closePanel } popout={ state.popout }>
+        <Main          id="main"           {...(state.props['main']          ?? {})} />
+        <Schedule      id="schedule"       {...(state.props['schedule']      ?? {})} />
+        <Theory        id="theory"         {...(state.props['theory']        ?? {})} />
+        <VTheory       id="v-theory"       {...(state.props['v-theory']       ?? {})} />
+        <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
+        <SingleTesting id="single-testing" {...(state.props['single-testing'] ?? {})} />
+        <SingleResult  id="single-result"  {...(state.props['single-result']  ?? {})} />
+      </View>
+    </AppRoot>
   );
 }

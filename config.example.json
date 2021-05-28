@@ -1,0 +1,12 @@
+{
+  "mysql": {
+    "host": "",
+    "password": "",
+    "user": "",
+    "database": ""
+  },
+  "vk": {
+    "secret_key": "",
+    "access_key": ""
+  }
+}

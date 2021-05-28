@@ -156,7 +156,7 @@ export default function SingleTesting(props) {
         { state.replied && 
           <FixedLayout vertical="bottom">
             <Div style={{ background: 'white' }}>
-              <Button mode={ state.currentTask + 1 == state.tasksCount ? "commerce" : "primary" } stretched size="xl" onClick={ next }>
+              <Button mode={ state.currentTask + 1 == state.tasksCount ? "commerce" : "primary" } stretched size="l" onClick={ next }>
                 { state.currentTask + 1 == state.tasksCount ? "Узнать результаты" : "Дальше" }
               </Button>
             </Div>
@@ -251,7 +251,7 @@ function T_Order({ problem, id, onReply, replied }) {
     {!replied && 
       <FixedLayout vertical="bottom">
         <Div style={{ background: 'white' }}>
-            <Button mode="primary" stretched size="xl" onClick={ reply }>Ответить</Button>
+            <Button mode="primary" stretched size="l" onClick={ reply }>Ответить</Button>
         </Div>
       </FixedLayout>
     }
@@ -295,7 +295,7 @@ function T_Input({ problem, id, onReply, replied }) {
     {!replied && 
       <FixedLayout vertical="bottom">
         <Div style={{ background: 'white' }}>
-            <Button mode="primary" stretched size="xl" onClick={ reply }>Ответить</Button>
+            <Button mode="primary" stretched size="l" onClick={ reply }>Ответить</Button>
         </Div>
       </FixedLayout>
     }
@@ -343,7 +343,7 @@ function T_Radio({ problem, id, onReply, replied }) {
     {!replied && 
       <FixedLayout vertical="bottom">
         <Div style={{ background: 'white' }}>
-          <Button disabled={ answer == null } mode="primary" stretched size="xl" onClick={ reply }>Ответить</Button>
+          <Button disabled={ answer == null } mode="primary" stretched size="l" onClick={ reply }>Ответить</Button>
         </Div>
       </FixedLayout>
     }
@@ -390,7 +390,7 @@ function T_Select({ problem, id, onReply, replied }) {
     {!replied && 
       <FixedLayout vertical="bottom">
         <Div style={{ background: 'white' }}>
-          <Button disabled={ answer.every(v => !v) } mode="primary" stretched size="xl" onClick={ reply }>Ответить</Button>
+          <Button disabled={ answer.every(v => !v) } mode="primary" stretched size="l" onClick={ reply }>Ответить</Button>
         </Div>
       </FixedLayout>
     }

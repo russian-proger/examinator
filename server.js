@@ -11,13 +11,16 @@ const cookieParser  = require('cookie-parser');
 const expressStaticGzip = require("express-static-gzip");
 
 
-
-
 // ====================================================
 // | Инициализация константных значений
 // ====================================================
 
-const IS_DEV = false;
+const IS_DEV = true;
+
+const DISCOUNT_IDS = [194530200, 248107510, 461383565, 384384993, 590926986];
+
+const REQUIRED_SUM = 300 * 1000;
+const DISCOUNT_SUM = 150 * 1000;
 
 /**
  * @description Прокси-префикс URI-ардеса
@@ -27,17 +30,28 @@ const URI_PREFIX = "";
 /**
  * @description Основной порт
  */
-const PORT = 3000;
+const PORT = 10000;
+
+if (!fs.existsSync("config.json")) {
+  console.error("Cannot find file named \"config.json\"");
+}
+
+if (!fs.existsSync("./static/tasks-state/")) {
+  fs.mkdirSync("./static/tasks-state/", { recursive: true });
+  console.warn("Created folder ./static/tasks-state");
+}
+
+const Config = JSON.parse(fs.readFileSync("config.json"));
 
 /**
  * @description Секретный ключ. Используется для проверки подписи
  */
-const secretKey = "2soxvl6nSTuKTffqZgQ8";
+const secretKey = Config.vk.secret_key;
 
 /**
  * @description Ключ доступа. Используется для VK API
  */
-const accessKey = "e7625570e7625570e762557024e717f939ee762e7625570b89cef51d855d884f8d27262";
+const accessKey = Config.vk.access_key;
 
 /**
  * @description Единственный экземпляр фреймворка express
@@ -49,9 +63,10 @@ const app = express();
  */
 const pool = mysql.createPool({
   connectionLimit: 5,
-  host: "localhost",
-  user: "admin",
-  database: "ogau"
+  host: Config.mysql.host,
+  user: Config.mysql.user,
+  database: Config.mysql.database,
+  password: Config.mysql.password
 }).promise();
 
 // ====================================================
@@ -156,6 +171,15 @@ function getSign(query) {
 }
 
 /**
+ * @description скидку для пользователя
+ * @param {Number} id ID пользователя
+ * @returns {Boolean}
+ */
+function isDiscountID(id) {
+  return DISCOUNT_IDS.indexOf(id) != -1;
+}
+
+/**
  * @description Создаёт рандомный ключ
  * @returns {string}
  */
@@ -205,6 +229,7 @@ app.disable('x-powered-by');
 app.use('/assets', expressStaticGzip(__dirname.concat('/assets')));
 app.use('/static', expressStaticGzip(__dirname.concat('/static')));
 app.use('/dist', expressStaticGzip(__dirname.concat('/dist'), {}));
+app.use('/modules', expressStaticGzip(__dirname.concat('/node_modules')));
 
 // Включаем парсер body
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -220,7 +245,6 @@ app.use(bodyParser.json());
 
 // Публичная версия приложения (стабильная)
 app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
-
   const signStatus = req.query.sign == getSign(req.query);
   if (!signStatus) return res.sendStatus(404);
 
@@ -235,12 +259,28 @@ app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
     }
 
     /**TODO */
-    res.render("temp_vk_app", { dev: IS_DEV, prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
+    if (user_info == undefined || user_info.balance < 3000) {
+      res.render("welcome", { prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
+    } else if (user_info.balance >= 3000) {
+      res.render("vk_app", { dev: IS_DEV, prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
+    }
   })
 });
 
+/**
+ * Проверка ВК-уведомлений
+ */
+app.post('/callback', (req, res) => {
+  if (req.body.type == "vkpay_transaction") {
+    pool.execute(`UPDATE users SET balance = balance + ${ req.body.object.amount } WHERE uid=${ req.body.object.from_id };`);
+  }
+  res.sendStatus(200);
+})
 
-app.post(URI_PREFIX.concat('/api'), (req, res) => {
+/**
+ * Обработка API
+ */
+app.post(URI_PREFIX.concat('/api'), async (req, res) => {
   var response = { status: true };
   const sendError = (message) => {
     response.status = false;
@@ -254,37 +294,44 @@ app.post(URI_PREFIX.concat('/api'), (req, res) => {
     return sendError("Некорректный параметр uid");
   }
   
-  getUserByID(parseInt(req.body.uid).toString()).then(result => {
-    if (!result[0] || !result[0].length) {
-      return sendError("Некорректный запрос");
+  const result = await getUserByID(parseInt(req.body.uid).toString());
+  if (!result[0] || !result[0].length) {
+    return sendError("Некорректный запрос");
+  }
+
+  if (crypto.createHmac('sha256', result[0][0].ukey).update(req.body.seed).digest().toString('hex') != req.body.secret) {
+    return sendError("Некорректный запрос");
+  }
+
+  switch (req.body.action) {
+    case 'online': {
+      updateUser({ uid: req.body.uid });
+      break;
+    }
+    case 'update-results': {
+      const fname = `./static/tasks-state/${req.body.uid}`;
+      var tasks = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseInt(v));
+      req.body.tasks.forEach((v, i) => {
+        tasks[v[0]] += v[1];
+      })
+      fs.writeFileSync(fname, tasks.join(' '));
+      insertTestResult(req.body);
+      break;
     }
 
-    if (crypto.createHmac('sha256', result[0][0].ukey).update(req.body.seed).digest().toString('hex') != req.body.secret) {
-      return sendError("Некорректный запрос");
+    case 'is-paid': {
+      let [[info]] = await pool.execute(`SELECT \`balance\` FROM \`users\` WHERE \`uid\`=${ req.body.uid }`);
+      response.status = true;
+      response.result = info.balance >= ( isDiscountID(req.body.uid) ? DISCOUNT_SUM : REQUIRED_SUM );
+      break;
     }
 
-    switch (req.body.action) {
-      case 'online': {
-        updateUser({ uid: req.body.uid });
-        break;
-      }
-      case 'update-results': {
-        const fname = `./static/tasks-state/${req.body.uid}`;
-        var tasks = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseInt(v));
-        req.body.tasks.forEach((v, i) => {
-          tasks[v[0]] += v[1];
-        })
-        fs.writeFileSync(fname, tasks.join(' '));
-        insertTestResult(req.body);
-        break;
-      }
-      default: {
-        return sendError("Не указан параметр action");
-      }
+    default: {
+      return sendError("Не указан параметр action");
     }
-  
-    res.send(JSON.stringify(response));
-  })
+  }
+
+  res.send(JSON.stringify(response));
 });
 
 

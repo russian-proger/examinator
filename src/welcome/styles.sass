@@ -1,0 +1,85 @@
+$bg: #6e1dff
+
+body
+  overflow: hidden
+
+#particles
+  box-sizing: border-box
+  padding-top: 5px
+  width: 100vw
+  height: 100vh
+  z-index: -1
+
+.vkuiFixedLayout__in.FixedLayout__in
+  z-index: -1
+
+.vkuiFixedLayout.vkuiFixedLayout--top.FixedLayout--top
+  z-index: -1
+
+.header
+  margin-top: 40px
+  position: relative
+  background: $bg
+  text-align: center
+  color: white
+
+
+.pay-button
+  background: black
+  color: white
+  text-align: center
+  width: fit-content
+  padding: 0 20px
+  position: absolute
+  bottom: 20px
+  left: 50%
+  transform: translateX(-50%)
+
+  &:active
+    background: #555
+
+.success-pay-button
+  background: #4caf50
+  color: white
+  text-align: center
+  width: fit-content
+  padding: 0 20px
+  position: absolute
+  bottom: 20px
+  left: 50%
+  transform: translateX(-50%)
+
+.id-wrapper
+  position: absolute
+  z-index: 3
+  color: white
+  display: flex
+  flex-direction: column
+  align-items: bottom
+  right: 0
+  bottom: 0
+
+  .id
+    background: #000
+    user-select: text
+    width: fit-content
+    padding: 0 20px
+    touch-action: auto
+    pointer-events: all
+
+    h3
+      user-select: all
+
+  .copy_btn
+    height: 40px
+    width: 100%
+    display: flex
+    background: $bg
+    justify-content: center
+    align-items: center
+    overflow: hidden
+    font-size: 1.17rem
+    font-weight: bold
+
+    &:active
+      background: lighten($bg, 10%)

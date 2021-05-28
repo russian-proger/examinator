@@ -23,3 +23,10 @@ ReactDOM.render((
 
 // Запуск приложения
 app.init();
+
+// Обновление экрана (для разработки)
+window.addEventListener("keydown", (ev) => {
+  if (ev.key == "F2") {
+    window.location.reload();
+  }
+})

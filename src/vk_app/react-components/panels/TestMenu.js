@@ -74,7 +74,7 @@ export default function TestMenu(props) {
 
       <FixedLayout vertical="bottom">
         <Div>
-          <Button mode="primary" stretched size="xl" disabled={ !state.allTasks && state.tasksCount < 5 } onClick={() => app.Event.dispatchEvent('switchpanel', ["single-testing", { ...state }])}>Начать!</Button>
+          <Button mode="primary" stretched size="l" disabled={ !state.allTasks && state.tasksCount < 5 } onClick={() => app.Event.dispatchEvent('switchpanel', ["single-testing", { ...state }])}>Начать!</Button>
         </Div>
       </FixedLayout>
     </Panel>
