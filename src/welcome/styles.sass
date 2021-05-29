@@ -29,57 +29,57 @@ body
   color: white
   text-align: center
   width: fit-content
-  padding: 0 20px
-  position: absolute
-  bottom: 20px
-  left: 50%
-  transform: translateX(-50%)
+  cursor: pointer
 
   &:active
     background: #555
+
+  
 
 .success-pay-button
   background: #4caf50
   color: white
   text-align: center
   width: fit-content
-  padding: 0 20px
+
+.next-button
+  background: black
+  color: white
+  cursor: pointer
+
+  &:active
+    background: #555
+
+
+.check-button
+  background: #3f3f3f
+  color: white
+  text-align: center
+  bottom: 20px
+  width: fit-content
+
+.buttons-panel
   position: absolute
   bottom: 20px
-  left: 50%
-  transform: translateX(-50%)
-
-.id-wrapper
-  position: absolute
-  z-index: 3
-  color: white
+  width: 100%
   display: flex
   flex-direction: column
-  align-items: bottom
-  right: 0
-  bottom: 0
+  justify-content: flex-end
+  align-items: center
 
-  .id
-    background: #000
-    user-select: text
-    width: fit-content
+  .button
     padding: 0 20px
-    touch-action: auto
-    pointer-events: all
+    margin-top: 10px
 
-    h3
-      user-select: all
+.cancel-checking-icon-button
+  left: 50%
+  top: 50%
+  transform: translate(-50%, -50%)
 
-  .copy_btn
-    height: 40px
-    width: 100%
-    display: flex
-    background: $bg
-    justify-content: center
-    align-items: center
-    overflow: hidden
-    font-size: 1.17rem
-    font-weight: bold
-
-    &:active
-      background: lighten($bg, 10%)
+.next-button
+  width: fit-content
+  position: absolute
+  left: 50%
+  top: 50%
+  transform: translate(-50%, -50%)
+  padding: 0 20px

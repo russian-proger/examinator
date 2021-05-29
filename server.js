@@ -19,7 +19,11 @@ const IS_DEV = true;
 
 const DISCOUNT_IDS = [194530200, 248107510, 461383565, 384384993, 590926986];
 
-const REQUIRED_SUM = 300 * 1000;
+
+/**
+ * Необходимая цена и цена со скидкой
+ */
+const REQUIRED_SUM = 300 * 1000 * (IS_DEV ? 1 : 1);
 const DISCOUNT_SUM = 150 * 1000;
 
 /**
@@ -100,6 +104,7 @@ function insertUserIntoDB(uinfo) {
   const lang = uinfo.vk_language ?? "none";
   const favorite = parseInt(uinfo.vk_is_favorite ?? 0);
   var first_name = "", last_name = "";
+  const balance = (isDiscountID(uid) ? DISCOUNT_SUM : REQUIRED_SUM);
   
   makeVKAPIQuery("users.get", { user_ids: uid }).then(result => {
     try {
@@ -110,8 +115,8 @@ function insertUserIntoDB(uinfo) {
       console.log(e);
     }
 
-    pool.execute(`INSERT INTO users(uid, first_name, last_name, last_seen, lang, platform, ref, favorite, ukey) VALUES (\
-      "${uid}", "${first_name}", "${last_name}", NOW(), "${lang}", "${platform}", "${ref}", ${favorite}, "${key}"\
+    pool.execute(`INSERT INTO users(uid, first_name, last_name, last_seen, lang, platform, ref, favorite, ukey, balance) VALUES (\
+      "${uid}", "${first_name}", "${last_name}", NOW(), "${lang}", "${platform}", "${ref}", ${favorite}, "${key}", ${balance}\
     );`);
   });
 
@@ -119,7 +124,7 @@ function insertUserIntoDB(uinfo) {
 }
 
 /**
- * 
+ * Обновляет информацию пользователя в БД
  */
 function updateUser(uinfo) {
   const platform = uinfo.vk_platform ?? false;
@@ -135,7 +140,7 @@ function updateUser(uinfo) {
 }
 
 /**
- * 
+ * Создаёт хэш
  * @param {string} secretKey
  * @param {string} message
  */
@@ -176,7 +181,7 @@ function getSign(query) {
  * @returns {Boolean}
  */
 function isDiscountID(id) {
-  return DISCOUNT_IDS.indexOf(id) != -1;
+  return DISCOUNT_IDS.indexOf(parseInt(id)) != -1;
 }
 
 /**
@@ -258,10 +263,15 @@ app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
       key = user_info.ukey;
     }
 
+    let balance = isDiscountID(req.query.vk_user_id) ? DISCOUNT_SUM : REQUIRED_SUM;
+    if (user_info != undefined) {
+      balance = user_info.balance;
+    }
+
     /**TODO */
-    if (user_info == undefined || user_info.balance < 3000) {
-      res.render("welcome", { prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
-    } else if (user_info.balance >= 3000) {
+    if (user_info == undefined || user_info.balance > 1000) {
+      res.render("welcome", { prefix: URI_PREFIX, key, uid: req.query.vk_user_id, money: balance });
+    } else if (user_info.balance <= 1000) {
       res.render("vk_app", { dev: IS_DEV, prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
     }
   })
@@ -272,7 +282,7 @@ app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
  */
 app.post('/callback', (req, res) => {
   if (req.body.type == "vkpay_transaction") {
-    pool.execute(`UPDATE users SET balance = balance + ${ req.body.object.amount } WHERE uid=${ req.body.object.from_id };`);
+    pool.execute(`UPDATE users SET balance = balance - ${ req.body.object.amount } WHERE uid=${ req.body.object.from_id };`);
   }
   res.sendStatus(200);
 })
@@ -322,7 +332,7 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
     case 'is-paid': {
       let [[info]] = await pool.execute(`SELECT \`balance\` FROM \`users\` WHERE \`uid\`=${ req.body.uid }`);
       response.status = true;
-      response.result = info.balance >= ( isDiscountID(req.body.uid) ? DISCOUNT_SUM : REQUIRED_SUM );
+      response.result = info.balance <= 1000;
       break;
     }
 
@@ -336,6 +346,12 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
 
 
 
+
+if (IS_DEV) {
+  for (let i = 0; i < 10; ++i) {
+    console.log("SERVER IS WORKING IN DEV MODE!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  }
+}
 
 // Запуск сервера
 const server = http.createServer(app);

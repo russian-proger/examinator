@@ -2,9 +2,10 @@ import React from 'react';
 import { CoreProvider } from '../vk_app/core/AppEngine';
 
 import bridge from '@vkontakte/vk-bridge';
-import { AppRoot, View, Panel, PanelHeader, FixedLayout, Button, PanelHeaderBack, Group, Cell, Header, List, Avatar, Snackbar } from '@vkontakte/vkui';
-import { Icon24Copy, Icon16Done } from '@vkontakte/icons';
+import { IconButton, AppRoot, View, Panel, PanelHeader, FixedLayout, Button, PanelHeaderBack, Group, Cell, Header, List, Avatar, Snackbar, ScreenSpinner } from '@vkontakte/vkui';
 
+import { Icon24Copy, Icon16Done, Icon16Cancel } from '@vkontakte/icons';
+import { Icon24ArrowRightOutline } from '@vkontakte/icons';
 var count = 0;
 export default function App(_props) {
   // Таким образом получаем ядро приложения во всех компонентах
@@ -12,7 +13,9 @@ export default function App(_props) {
 
   const [state, setState] = React.useState({
     snackbar: null,
-    paid: false
+    paidStatus: 0,
+    interval: null,
+    disabled: false
   });
 
   // Запуск Particles.js на заднем фоне
@@ -127,52 +130,70 @@ export default function App(_props) {
         }
       },
       "retina_detect": true
-    })
+    });
   }, []);
 
-  function copyText() {
-    let text = `${API_KEY}#${UID}`;
-    let textElement = document.createElement('input');
-    textElement.type = "text";
-    document.body.appendChild(textElement);
-    textElement.value = text;
-    textElement.select();
-    document.execCommand("copy");
-    textElement.remove();
+  function pay() {
+    setState({ ...state, disabled: true });
+    app.Network.isPaid().then(res => {
+      console.log(res);
+      setState({ ...state, disabled: false });
+      if (res.status && res.result) {
+        window.location.reload();
+      } else {
+        var handle = (ev => {
+          console.log(ev);
+          var countTries = 0;
+          var interval = setInterval(() => {
+            app.Network.isPaid().then(v => {
+              if (countTries++ > 120) {
+                clearInterval(interval);
+                setState({ paidStatus: 0 });
+              }
+    
+              if (v.status && v.result) {
+                clearInterval(interval);
+                setState({ paidStatus: 2, snackbar: (
+                  <Snackbar
+                    duration="3500"
+                    onClose={() => setState({ ...state, paidStatus: 2, snackbar: null })}
+                    before={<Avatar size={24} style={{ background: 'var(--accent)' }}><Icon16Done fill="#fff" width={14} height={14} /></Avatar>}
+                  >Оплата прошла успешно</Snackbar>
+                ) });
+              }
+            });
+          }, 2000);
+          setState({ paidStatus: 1, interval });
+        });
 
-    setState({
-      snackbar: (
-        <Snackbar
-          duration="1500"
-          onClose={() => setState({ snackbar: null })}
-          before={<Avatar size={24} style={{ background: 'var(--accent)' }}><Icon16Done fill="#fff" width={14} height={14} /></Avatar>}
-        >
-          ID скопировано
-        </Snackbar>
-      )
+        bridge.send("VKWebAppOpenPayForm", {
+          app_id: 7711817,
+          action: "pay-to-group",
+          params: {
+            description: "Оплата доступа",
+            amount: MONEY / 1000,
+            group_id: 204746349
+          }
+        }).catch(ev => {
+          if (ev.error_data.error_code != 1) {
+            handle(ev)
+          }
+        }).then(handle);
+      }
     });
   }
 
-  function pay() {
-    bridge.send("VKWebAppOpenPayForm", {
-      app_id: 7711817,
-      action: "pay-to-group",
-      params: {
-        description: "Оплата доступа",
-        amount: 3,
-        group_id: 204746349
-      }
-    }).then(ev => {
-      if (ev.status) {
-        app.Network.isPaid().then(v => console.log(v));
-        setState({ paid: true });
-      }
+  function cancelChecking() {
+    clearInterval(state.interval);
+    setState({
+      interval: null,
+      paidStatus: 0
     });
   }
 
   return (
     <AppRoot>
-      <View id="main" activePanel={ "main" }>
+      <View id="main" activePanel={ "main" } popout={ state.paidStatus == 1 ? <><ScreenSpinner/><IconButton className="cancel-checking-icon-button" onClick={ cancelChecking }><Icon16Cancel /></IconButton></> : null }>
         <Panel id="main">
           <PanelHeader>Экзаменатор</PanelHeader>
           
@@ -184,17 +205,30 @@ export default function App(_props) {
             <h1>Помогаем подготовиться к экзаменам</h1>
           </div>
           
-          { state.paid &&
-            <div className="success-pay-button">
-              <h3>Оплата проведена успешно!</h3>
+
+
+          { state.paidStatus == 2 &&
+            <div className="next-button button" onClick={ () => window.location.reload() }>
+              <h3>Перейти к тестам</h3>
             </div>
           }
 
-          { !state.paid &&
-            <div className="pay-button" onClick={ pay }>
-              <h3>Получить доступ</h3>
-            </div>
-          }
+          <div className="buttons-panel">
+
+            { state.paidStatus == 1 &&
+            <>
+              <div className="check-button button">
+                <h3>Проверка оплаты</h3>
+              </div>
+            </>
+            }
+
+            { state.paidStatus == 0 &&
+              <div className="pay-button button" onClick={ () => !state.disabled && pay() }>
+                <h3>Получить доступ</h3>
+              </div>
+            }
+          </div>
 
           { state.snackbar }
         </Panel>
