@@ -14,6 +14,8 @@ import { AppCore, CoreProvider } from './core/AppEngine';
 // Экземпляр класса-одиночки
 const app = new AppCore();
 
+window.app = app;
+
 // Рендеринг интерфейса
 ReactDOM.render((
   <CoreProvider.Provider value={app}>

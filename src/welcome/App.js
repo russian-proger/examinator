@@ -2,10 +2,12 @@ import React from 'react';
 import { CoreProvider } from '../vk_app/core/AppEngine';
 
 import bridge from '@vkontakte/vk-bridge';
-import { IconButton, AppRoot, View, Panel, PanelHeader, FixedLayout, Button, PanelHeaderBack, Group, Cell, Header, List, Avatar, Snackbar, ScreenSpinner } from '@vkontakte/vkui';
+import { IconButton, AppRoot, View, Panel, PanelHeader, FixedLayout, Button, PanelHeaderBack, Group, Cell, Header, List, Avatar, Snackbar, ScreenSpinner, PanelHeaderButton } from '@vkontakte/vkui';
+import { Icon28RefreshOutline } from '@vkontakte/icons';
 
 import { Icon24Copy, Icon16Done, Icon16Cancel } from '@vkontakte/icons';
 import { Icon24ArrowRightOutline } from '@vkontakte/icons';
+import { Icon20CheckCircleFillGreen } from '@vkontakte/icons';
 var count = 0;
 export default function App(_props) {
   // Таким образом получаем ядро приложения во всех компонентах
@@ -157,7 +159,7 @@ export default function App(_props) {
                   <Snackbar
                     duration="3500"
                     onClose={() => setState({ ...state, paidStatus: 2, snackbar: null })}
-                    before={<Avatar size={24} style={{ background: 'var(--accent)' }}><Icon16Done fill="#fff" width={14} height={14} /></Avatar>}
+                    before={<Avatar size={24} ><Icon20CheckCircleFillGreen /></Avatar>}
                   >Оплата прошла успешно</Snackbar>
                 ) });
               }
@@ -195,9 +197,11 @@ export default function App(_props) {
     <AppRoot>
       <View id="main" activePanel={ "main" } popout={ state.paidStatus == 1 ? <><ScreenSpinner/><IconButton className="cancel-checking-icon-button" onClick={ cancelChecking }><Icon16Cancel /></IconButton></> : null }>
         <Panel id="main">
-          <PanelHeader>Экзаменатор</PanelHeader>
+          <PanelHeader
+            left={ <PanelHeaderButton onClick={ () => window.location.reload() }><Icon28RefreshOutline /></PanelHeaderButton> }
+          >Экзаменатор</PanelHeader>
           
-          <FixedLayout vertical="top">
+          <FixedLayout className="particles-layout" vertical="top">
             <div key="particles" id="particles"/>
           </FixedLayout>
           

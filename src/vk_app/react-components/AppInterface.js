@@ -6,7 +6,6 @@ import { AppRoot, View, Panel, PanelHeader, PanelHeaderBack, Group, Cell, Header
 
 // Панели
 import Main from './panels/Main';
-import Schedule from './panels/Schedule';
 import Theory from './panels/Theory';
 import VTheory from './panels/VTheory';
 import TestMenu from './panels/TestMenu';
@@ -23,7 +22,7 @@ export default function AppInterface(_props) {
     activeProps: {},     // Свойства, передаваемые этому панелю
     activeView: "main",  // Текущее окно
     history: ["main"],   // История панелей для iosSwipeBack
-    props: {},         // История свойств
+    props: {},           // История свойств
     popout: null         // Для модальных окон
   });
 
@@ -86,9 +85,8 @@ export default function AppInterface(_props) {
   return (
     <AppRoot>
       <View id="main" activePanel={ state.activePanel } history={ state.history } onSwipeBack={ closePanel } popout={ state.popout }>
-        <Main          id="main"           {...(state.props['main']          ?? {})} />
-        <Schedule      id="schedule"       {...(state.props['schedule']      ?? {})} />
-        <Theory        id="theory"         {...(state.props['theory']        ?? {})} />
+        <Main          id="main"           {...(state.props['main']           ?? {})} />
+        <Theory        id="theory"         {...(state.props['theory']         ?? {})} />
         <VTheory       id="v-theory"       {...(state.props['v-theory']       ?? {})} />
         <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
         <SingleTesting id="single-testing" {...(state.props['single-testing'] ?? {})} />

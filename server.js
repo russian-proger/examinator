@@ -11,14 +11,19 @@ const cookieParser  = require('cookie-parser');
 const expressStaticGzip = require("express-static-gzip");
 
 
+
 // ====================================================
 // | Инициализация константных значений
 // ====================================================
 
+// Режим разработки
 const IS_DEV = true;
 
+// ID пользователей, для которых доступна скидочная цена
 const DISCOUNT_IDS = [194530200, 248107510, 461383565, 384384993, 590926986];
 
+// Кодовые названия предметов
+const subjects = ['evm', 'int', 'inf'];
 
 /**
  * Необходимая цена и цена со скидкой
@@ -212,6 +217,13 @@ function insertTestResult(tinfo) {
   pool.execute(`INSERT INTO results(uid, result, tasks_count, date) VALUES ("${uid}", "${result}", "${tasksCount}", NOW());`);
 }
 
+/**
+ * @description Проверяет папку skills в cache
+ */
+function checkSkills() {
+  if (!fs.existsSync('./skills')) fs.mkdirSync('./skills');
+}
+
 // ====================================================
 
 
@@ -232,9 +244,10 @@ app.disable('x-powered-by');
 
 // Виртуализация сетевых директорий
 app.use('/assets', expressStaticGzip(__dirname.concat('/assets')));
-app.use('/static', expressStaticGzip(__dirname.concat('/static')));
+app.use('/static', expressStaticGzip(__dirname.concat('/static/pictures')));
 app.use('/dist', expressStaticGzip(__dirname.concat('/dist'), {}));
 app.use('/modules', expressStaticGzip(__dirname.concat('/node_modules')));
+app.use('/tests', expressStaticGzip(__dirname.concat('/cache/tests')));
 
 // Включаем парсер body
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -278,7 +291,7 @@ app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
 });
 
 /**
- * Проверка ВК-уведомлений
+ * Обработка оплаты
  */
 app.post('/callback', (req, res) => {
   if (req.body.type == "vkpay_transaction") {
@@ -286,6 +299,8 @@ app.post('/callback', (req, res) => {
   }
   res.sendStatus(200);
 })
+
+const statsCache = new Object();
 
 /**
  * Обработка API
@@ -336,6 +351,46 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
       break;
     }
 
+    case 'get-skills': {
+      let fname = `./skills/${req.body.uid}/${req.body.subject_id}`;
+
+      if (!fs.existsSync(`./skills/${req.body.uid}`)) {
+        fs.mkdirSync(`./skills/${req.body.uid}`);
+        subjects.forEach((v, i) => fs.writeFileSync(`./skills/${req.body.uid}/${i}`, new Array(300).fill(0).join(" ")));
+      }
+
+      response.result = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseInt(v));
+      break;
+    }
+
+    case 'get-stats': {
+      if (!req.body.hasOwnProperty('subject_id')) {
+        response.status = false;
+        break;
+      }
+
+      let [results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id} LIMIT 10`);
+      response.results = results;
+
+      if (!statsCache.hasOwnProperty(req.body.uid) || statsCache[req.body.uid].lastUpdate < Date.now() - 10000) {
+        let [full_results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id}`);
+        statsCache[req.body.uid] = {
+          lastUpdate: Date.now(),
+          correct_answers: 0,
+          total_questions: 0
+        }
+
+        for (let i of full_results) {
+          statsCache[req.body.uid].correct_answers += i.correct_answers_c;
+          statsCache[req.body.uid].total_questions += i.tasks_c;
+        }
+      }
+
+      response.correct_answers = statsCache[req.body.uid].correct_answers;
+      response.total_questions = statsCache[req.body.uid].total_questions;
+      break;
+    }
+
     default: {
       return sendError("Не указан параметр action");
     }
@@ -344,8 +399,7 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
   res.send(JSON.stringify(response));
 });
 
-
-
+checkSkills();
 
 if (IS_DEV) {
   for (let i = 0; i < 10; ++i) {

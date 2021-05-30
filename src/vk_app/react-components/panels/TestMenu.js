@@ -1,72 +1,72 @@
 import React from 'react';
-import { CoreProvider } from '../../core/AppEngine';
+import { AppCore, CoreProvider } from '../../core/AppEngine';
 
-import { Panel, PanelHeader, Group, Cell, Header, List, PanelHeaderBack, Button, FormLayout, FormLayoutGroup, Radio, FixedLayout, Footer, Div, Slider, Checkbox, Text, FormStatus } from '@vkontakte/vkui';
+import {
+  Button,
+  Cell,
+  Checkbox,
+  Div,
+  Group,
+  Header,
+  List,
+  FixedLayout,
+  Footer,
+  FormItem,
+  FormLayout,
+  FormLayoutGroup,
+  FormStatus,
+  Panel,
+  PanelHeader,
+  PanelHeaderBack,
+  PanelSpinner,
+  Radio,
+  Slider,
+  Text
+} from '@vkontakte/vkui';
 
+const subject_names = ["ЭВМ", "Интегралы", "Теория Информации"];
+
+import { subjects } from './../../../../assets/robots';
 
 export default function TestMenu(props) {
+  /** @type {AppCore} */
   const app = React.useContext(CoreProvider);
+
   const [state, setState] = React.useState({
     subject: 'geom',
-    tasksCount: 10,
+    tasksCount: 15,
     allTasks: false,
-    random: true,
-    types: {
-      order: true,
-      input: true,
-      radio: true,
-      select: true
-    }
+    random: false,
+    fetching: true
   });
 
-  function setTasksCount(tasksCount) {
-    setState({ ...state, tasksCount });
-  }
+  React.useEffect(() => {
+    let url = `/assets/${ subjects[props.subject_id] }.json`;
+    
+    Promise.all([
+      app.File.loadFromURL(url, false, true, false),
+      app.Network.getSkills(props.subject_id)
+    ]).then( ([tests, skills]) => {
+      console.log(tests, skills);
+    })
+    
+  }, []);
 
   return (
     <Panel id={ props.id }>
-      <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>Тест</PanelHeader>
-      
-      <FormLayout>
-        <FormLayoutGroup top={`Количество вопросов: ${ state.allTasks ? "все" : state.tasksCount }`}>
-          <Div>
-            <Checkbox onChange={ v => setState({ ...state, allTasks: v.target.checked, random: true }) } checked={ state.allTasks }>Ответить на все вопросы</Checkbox>
-            { state.allTasks &&
-              <Checkbox onChange={ v => setState({ ...state, random: !v.target.checked }) } checked={ !state.random }>По порядку</Checkbox>
-            }
-          </Div>
-          { !state.allTasks &&
-            <Slider onChange={ v => setTasksCount(v) } defaultValue={ state.tasksCount } max={ 50 } step={ 5 } />
-          }
-        </FormLayoutGroup>
-      </FormLayout>
+      <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>{ subject_names[props.subject_id] }</PanelHeader>
 
-      { !state.allTasks && state.tasksCount < 5 &&
-        <Div>
-          <FormStatus header="Некорректное число вопросов" mode="error">Количество вопросов должно быть не менее 5</FormStatus>
-        </Div>
-      }
-
-      <FormLayout>
-        <FormLayoutGroup top="Типы заданий">
-          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, radio: v.target.checked } }) } checked={ state.types.radio }>
-            Один вариант ответа
-          </Checkbox>
-          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, select: v.target.checked } }) } checked={ state.types.select }>
-            Несколько вариантов ответа
-          </Checkbox>
-          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, input: v.target.checked } }) } checked={ state.types.input }>
-            Ввод
-          </Checkbox>
-          <Checkbox onChange={ v => setState({ ...state, types: { ...state.types, order: v.target.checked } }) } checked={ state.types.order }>
-            Последовательность
-          </Checkbox>
-        </FormLayoutGroup>
-      </FormLayout>
+      {state.fetching ? <PanelSpinner /> : null}
 
       <FormLayout>
         <FormLayoutGroup top={`Экзаменационная дисциплина`}>
-          <Radio name="subject" value="geom" defaultChecked>Начертательная геометрия</Radio>
+          <FormItem top="Количество вопросов">
+            { [15, 25, 35, 50].map((v, i) => (
+              <Radio key={v} name="count" value={v} defaultChecked={ !i } onClick={ () => setState({...state, tasksCount: v, allTasks: false}) }>{v}</Radio>
+            ))
+            }
+            <Radio name="count" value={100} onClick={() => setState({...state, allTasks: true})}>Все вопросы</Radio>
+          </FormItem>
         </FormLayoutGroup>
       </FormLayout>
 

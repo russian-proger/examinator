@@ -20,4 +20,8 @@ export default function Network(self) {
   }
 
   this.isPaid = (data) => this.requestAPI({ action: 'is-paid', ...data });
+
+  this.getSkills = (subject_id) => this.requestAPI({ action: 'get-skills', subject_id });
+
+  this.getStats = (subject_id) => this.requestAPI({ action: 'get-stats', subject_id });
 }

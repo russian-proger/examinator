@@ -10,6 +10,10 @@ export default function FileSystem() {
     cache[url] = value;
   }
 
+  this.has = (url) => {
+    return cache.hasOwnProperty(url);
+  }
+
   /**
    * 
    * @param {string} url path to file
