@@ -33,10 +33,8 @@ export default function TestMenu(props) {
   const app = React.useContext(CoreProvider);
 
   const [state, setState] = React.useState({
-    subject: 'geom',
     tasksCount: 15,
     allTasks: false,
-    random: false,
     fetching: true
   });
 
@@ -44,13 +42,14 @@ export default function TestMenu(props) {
     let url = `/assets/${ subjects[props.subject_id] }.json`;
     
     Promise.all([
-      app.File.loadFromURL(url, false, true, false),
+      app.File.loadFromURL(url, true, true, false),
       app.Network.getSkills(props.subject_id)
-    ]).then( ([tests, skills]) => {
-      console.log(tests, skills);
+    ]).then( ([tasks, skills]) => {
+      setState({ ...state, tasks, skills: skills.result, fetching: false });
     })
-    
   }, []);
+
+  
 
   return (
     <Panel id={ props.id }>
@@ -65,7 +64,7 @@ export default function TestMenu(props) {
               <Radio key={v} name="count" value={v} defaultChecked={ !i } onClick={ () => setState({...state, tasksCount: v, allTasks: false}) }>{v}</Radio>
             ))
             }
-            <Radio name="count" value={100} onClick={() => setState({...state, allTasks: true})}>Все вопросы</Radio>
+            <Radio name="count" value={0} onClick={() => setState({...state, allTasks: true})}>Все вопросы { state.tasks ? `(${state.tasks.catalog.length})` : `` }</Radio>
           </FormItem>
         </FormLayoutGroup>
       </FormLayout>
@@ -74,7 +73,7 @@ export default function TestMenu(props) {
 
       <FixedLayout vertical="bottom">
         <Div>
-          <Button mode="primary" stretched size="l" disabled={ !state.allTasks && state.tasksCount < 5 } onClick={() => app.Event.dispatchEvent('switchpanel', ["single-testing", { ...state }])}>Начать!</Button>
+          <Button mode="primary" stretched size="l" disabled={ !state.allTasks && state.tasksCount < 5 } onClick={() => !state.fetching &&  app.Event.dispatchEvent('switchpanel', ["testing", { ...state, subject_id: props.subject_id }])}>Начать!</Button>
         </Div>
       </FixedLayout>
     </Panel>

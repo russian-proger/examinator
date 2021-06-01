@@ -15,8 +15,8 @@ export default function Network(self) {
     }).then(res => res.json());
   }
 
-  this.sendResults = (data) => {
-    this.requestAPI({ action: 'update-results', ...data });
+  this.sendResults = (subject_id, results) => {
+    this.requestAPI({ action: 'update-results', subject_id, results });
   }
 
   this.isPaid = (data) => this.requestAPI({ action: 'is-paid', ...data });

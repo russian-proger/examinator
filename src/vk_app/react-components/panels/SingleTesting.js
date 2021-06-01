@@ -3,11 +3,37 @@ import { CoreProvider } from '../../core/AppEngine';
 
 import './SingleTesting.sass';
 
-import { SSRWrapper, Panel, PanelHeader, Counter, Group, Cell, PanelHeaderButton, Button, Alert, Div, Progress, Text, FormLayout, FormLayoutGroup, Radio, Checkbox, FixedLayout, Input, List, Footer, ANDROID } from '@vkontakte/vkui';
+import {
+  SSRWrapper,
+  Panel,
+  PanelHeader,
+  Counter,
+  Group,
+  Cell,
+  PanelHeaderButton,
+  Button,
+  Alert,
+  Div,
+  Progress,
+  Text,
+  FormLayout,
+  FormLayoutGroup,
+  Radio,
+  Checkbox,
+  FixedLayout,
+  Input,
+  List,
+  Footer,
+  ANDROID,
+  ScreenSpinner
+} from '@vkontakte/vkui';
+
 import Icon28DoorArrowLeftOutline from '@vkontakte/icons/dist/28/door_arrow_left_outline';
 
 import Icon28CancelCircleFillRed from '@vkontakte/icons/dist/28/cancel_circle_fill_red';
 import Icon28CheckCircleFill from '@vkontakte/icons/dist/28/check_circle_fill';
+
+import { copyObj } from './../../core/Utils';
 
 export default function SingleTesting(props) {
   const app = React.useContext(CoreProvider);
@@ -23,24 +49,46 @@ export default function SingleTesting(props) {
   });
 
   React.useEffect(() => {
-    Promise.all([
-      app.File.loadFromURL(`/assets/${ props.subject }.json`, true),
-      app.File.loadFromURL(`/static/tasks-state/${ UID }`, false)
-    ]).then(([mat, _tState]) => {
-      var tasks = mat.catalog[0].problems.map((v, i) => [v, i]).filter(v => props.types[v[0].type]);
-      var tState = (_tState ?? new Array(mat.catalog[0].problems.length).fill(0));
-      if (typeof tState == "string") {
-        tState = tState.split(' ');
-        app.File.keep(`/static/tasks-state/${ UID }`, tState);
-      }
-      if (props.random) {
-        tasks.sort((a, b) => tState[a[1]] == tState[b[1]] ? Math.random() - 0.5 : tState[a[1]] - tState[b[1]]);
-      }
-      if (!props.allTasks) {
-        tasks = tasks.slice(0, props.tasksCount);
-      }
-      setState({ ...state, tasks, tasksCount: tasks.length });
-    });
+    app.Event.dispatchEvent("openpopout", [<ScreenSpinner />]);
+    
+    let now = Date.now();
+
+    let tasksCount = props.allTasks ? props.tasks.catalog.length : props.tasksCount;
+
+    let tasks = Object.create(props.tasks.catalog).map(v => copyObj(v)).sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
+      return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
+    }).slice(0, tasksCount);
+    console.log(tasks);
+
+
+    const close = () => {
+      app.Event.dispatchEvent("closepopout");
+      setState({ ...state, tasks, tasksCount });
+    }
+
+    const _now = Date.now();
+    if (now > _now - 1000)
+      setTimeout(close, now - (_now - 1000));
+    else
+      close();
+    // Promise.all([
+    //   app.File.loadFromURL(`/assets/${ props.subject }.json`, true),
+    //   app.File.loadFromURL(`/static/tasks-state/${ UID }`, false)
+    // ]).then(([mat, _tState]) => {
+    //   var tasks = mat.catalog[0].problems.map((v, i) => [v, i]).filter(v => props.types[v[0].type]);
+    //   var tState = (_tState ?? new Array(mat.catalog[0].problems.length).fill(0));
+    //   if (typeof tState == "string") {
+    //     tState = tState.split(' ');
+    //     app.File.keep(`/static/tasks-state/${ UID }`, tState);
+    //   }
+    //   if (props.random) {
+    //     tasks.sort((a, b) => tState[a[1]] == tState[b[1]] ? Math.random() - 0.5 : tState[a[1]] - tState[b[1]]);
+    //   }
+    //   if (!props.allTasks) {
+    //     tasks = tasks.slice(0, props.tasksCount);
+    //   }
+    //   setState({ ...state, tasks, tasksCount: tasks.length });
+    // });
   }, []);
 
   React.useLayoutEffect(() => {
@@ -56,7 +104,7 @@ export default function SingleTesting(props) {
   }, [state.replied]);
 
   function complete() {
-    app.Event.dispatchEvent('switchpanel', ["single-result", { ...state, tasksCount: state.results.length, subject: props.subject, durations: state.durations }]);
+    app.Event.dispatchEvent('switchpanel', ["single-result", { ...state, tasksCount: state.results.length, subject_id: props.subject_id, durations: state.durations }]);
   }
 
   function openExit() {
@@ -130,28 +178,28 @@ export default function SingleTesting(props) {
             background: '#c6e2f9'
           }}>
             <Text weight="medium">
-              <span dangerouslySetInnerHTML={{ __html: `${(state.tasks[state.currentTask][1] + 1).toString()}. ` + state.tasks[state.currentTask][0].question }}></span>
+              <span dangerouslySetInnerHTML={{ __html: `${(state.tasks[state.currentTask].id)}. ` + state.tasks[state.currentTask].question }}></span>
             </Text>
           </div>
         </Div>
 
-        { state.tasks[state.currentTask][0].picture &&
+        { state.tasks[state.currentTask].picture &&
           <Div style={{ display: 'flex', justifyContent: 'center', width: '100%', boxSizing: 'border-box' }}>
-            <T_Image src={`/static/images/${props.subject}/${state.tasks[state.currentTask][0].picture}`} />
+            <T_Image src={`/static/pictures/${props.subject_id}/${state.tasks[state.currentTask].picture}`} />
           </Div>
         }
 
-        { (state.tasks && state.tasks[state.currentTask][0].type == "order") &&
-          <T_Order key={ state.currentTask } id={ state.tasks[state.currentTask][1] } problem={ state.tasks[state.currentTask][0] } onReply={ onReply } replied={ state.replied } />
+        { (state.tasks && state.tasks[state.currentTask].type == "order") &&
+          <T_Order key={ state.currentTask } id={ state.tasks[state.currentTask].id } problem={ state.tasks[state.currentTask] } onReply={ onReply } replied={ state.replied } />
         }
-        { (state.tasks && state.tasks[state.currentTask][0].type == "input") &&
-          <T_Input key={ state.currentTask } id={ state.tasks[state.currentTask][1] } problem={ state.tasks[state.currentTask][0] } onReply={ onReply } replied={ state.replied } />
+        { (state.tasks && state.tasks[state.currentTask].type == "input") &&
+          <T_Input key={ state.currentTask } id={ state.tasks[state.currentTask].id } problem={ state.tasks[state.currentTask] } onReply={ onReply } replied={ state.replied } />
         }
-        { (state.tasks && state.tasks[state.currentTask][0].type == "radio") &&
-          <T_Radio key={ state.currentTask } id={ state.tasks[state.currentTask][1] } problem={ state.tasks[state.currentTask][0] } onReply={ onReply } replied={ state.replied } />
+        { (state.tasks && state.tasks[state.currentTask].type == "radio") &&
+          <T_Radio key={ state.currentTask } id={ state.tasks[state.currentTask].id } problem={ state.tasks[state.currentTask] } onReply={ onReply } replied={ state.replied } />
         }
-        { (state.tasks && state.tasks[state.currentTask][0].type == "select") &&
-          <T_Select key={ state.currentTask } id={ state.tasks[state.currentTask][1] } problem={ state.tasks[state.currentTask][0] } onReply={ onReply } replied={ state.replied } />
+        { (state.tasks && state.tasks[state.currentTask].type == "select") &&
+          <T_Select key={ state.currentTask } id={ state.tasks[state.currentTask].id } problem={ state.tasks[state.currentTask] } onReply={ onReply } replied={ state.replied } />
         }
         { state.replied && 
           <FixedLayout vertical="bottom">
@@ -306,7 +354,6 @@ function T_Input({ problem, id, onReply, replied }) {
 function T_Radio({ problem, id, onReply, replied }) {
   const [conv] = React.useState(new Array(problem.options.length).fill(0).map((v, i) => i).sort(() => Math.random() - 0.5));
   const [answer, setAnswer] = React.useState(null);
-  console.log(conv);
 
   function reply() {
     if (answer == null) return;

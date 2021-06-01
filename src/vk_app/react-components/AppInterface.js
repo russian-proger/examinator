@@ -89,7 +89,7 @@ export default function AppInterface(_props) {
         <Theory        id="theory"         {...(state.props['theory']         ?? {})} />
         <VTheory       id="v-theory"       {...(state.props['v-theory']       ?? {})} />
         <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
-        <SingleTesting id="single-testing" {...(state.props['single-testing'] ?? {})} />
+        <SingleTesting id="testing"        {...(state.props['testing'] ?? {})} />
         <SingleResult  id="single-result"  {...(state.props['single-result']  ?? {})} />
       </View>
     </AppRoot>

@@ -31,28 +31,15 @@ export default function TestMenu(props) {
 
   React.useEffect(() => {
     if (props.tasksCount == 0) return;
-    const tasks = props.durations.map((v, i) => {
-      let inc = 0;
-      if (v > 10000) {
-        inc = 1;
-      } else if (v > 3000) {
-        inc = 2;
-      } else {
-        inc = 3;
-      }
-      if (!props.results[i]) {
-        inc = 0;
-      }
-      return [props.tasks[i][1], inc];
-    });
+    console.log(props);
 
-    app.File.loadFromURL(`/static/tasks-state/${ UID }`, false).then(c => {
-      tasks.forEach(v => {
-        c[v[0]] += v[1];
-      });
-    });
+    let results = props.tasks.map((v, i) => ({
+      id: v.id,
+      duration: props.durations[i],
+      result: props.results[i]
+    }));
 
-    app.Network.sendResults({ tasks, tasks_count: props.tasksCount, result: parseInt(score) });
+    app.Network.sendResults(props.subject_id, results);
   }, []);
 
   function onFilter(index, val) {
@@ -86,27 +73,27 @@ export default function TestMenu(props) {
               background: '#c6e2f9'
             }}>
               <Text weight="medium">
-                <span dangerouslySetInnerHTML={{ __html: `${(props.tasks[v][1] + 1).toString()}. ` + props.tasks[v][0].question }}></span>
+                <span dangerouslySetInnerHTML={{ __html: `${props.tasks[v].id}. ` + props.tasks[v].question }}></span>
               </Text>
             </div>
             
-            { props.tasks[v][0].picture &&
+            { props.tasks[v].picture &&
               <Div style={{ display: 'flex', justifyContent: 'center', width: '100%', boxSizing: 'border-box' }}>
-                <T_Image src={`/static/images/${props.subject}/${props.tasks[v][0].picture}`} />
+                <T_Image src={`/static/images/${props.subject_id}/${props.tasks[v].picture}`} />
               </Div>
             }
 
-            { props.tasks[v][0].type == "order" &&
-              <T_Order  problem={ props.tasks[v][0] } result={ props.results[v] } answer={ props.answers[v].split('').map(v => parseInt(v)) } />
+            { props.tasks[v].type == "order" &&
+              <T_Order  problem={ props.tasks[v] } result={ props.results[v] } answer={ props.answers[v].split('').map(v => parseInt(v)) } />
             }
-            { props.tasks[v][0].type == "input" &&
-              <T_Input  problem={ props.tasks[v][0] } result={ props.results[v] } answer={ props.answers[v] } />
+            { props.tasks[v].type == "input" &&
+              <T_Input  problem={ props.tasks[v] } result={ props.results[v] } answer={ props.answers[v] } />
             }
-            { props.tasks[v][0].type == "radio" &&
-              <T_Radio  problem={ props.tasks[v][0] } result={ props.results[v] } answer={ parseInt(props.answers[v]) } />
+            { props.tasks[v].type == "radio" &&
+              <T_Radio  problem={ props.tasks[v] } result={ props.results[v] } answer={ parseInt(props.answers[v]) } />
             }
-            { props.tasks[v][0].type == "select" &&
-              <T_Select problem={ props.tasks[v][0] } result={ props.results[v] } answer={ props.answers[v].split('').map(v => parseInt(v)) } />
+            { props.tasks[v].type == "select" &&
+              <T_Select problem={ props.tasks[v] } result={ props.results[v] } answer={ props.answers[v].split('').map(v => parseInt(v)) } />
             }
           </Div>
         </div>

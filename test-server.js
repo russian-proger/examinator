@@ -17,7 +17,7 @@ const expressStaticGzip = require("express-static-gzip");
 // ====================================================
 
 // Режим разработки
-const IS_DEV = false;
+const IS_DEV = true;
 
 // ID пользователей, для которых доступна скидочная цена
 const DISCOUNT_IDS = [194530200, 248107510, 461383565, 384384993, 590926986];
@@ -39,7 +39,7 @@ const URI_PREFIX = "";
 /**
  * @description Основной порт
  */
-const PORT = 10000;
+const PORT = IS_DEV ? 8000 : 10000;
 
 if (!fs.existsSync("config.json")) {
   console.error("Cannot find file named \"config.json\"");
@@ -254,6 +254,7 @@ app.use(bodyParser.json());
 
 
 // Публичная версия приложения (стабильная)
+app.get('/', (req, res) => {res.sendStatus(200)});
 app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
   const signStatus = req.query.sign == getSign(req.query);
   if (!signStatus) return res.sendStatus(404);
@@ -413,3 +414,4 @@ if (IS_DEV) {
 // Запуск сервера
 const server = http.createServer(app);
 server.listen(PORT);
+console.log(`Server is started at port ${ PORT }`)
