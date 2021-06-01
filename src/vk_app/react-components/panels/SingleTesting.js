@@ -57,7 +57,7 @@ export default function SingleTesting(props) {
 
     let tasks = Object.create(props.tasks.catalog).map(v => copyObj(v)).sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
       return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
-    }).slice(0, tasksCount);
+    }).filter(v => v.id == "66").slice(0, tasksCount);
     console.log(tasks);
 
 
@@ -71,24 +71,6 @@ export default function SingleTesting(props) {
       setTimeout(close, now - (_now - 1000));
     else
       close();
-    // Promise.all([
-    //   app.File.loadFromURL(`/assets/${ props.subject }.json`, true),
-    //   app.File.loadFromURL(`/static/tasks-state/${ UID }`, false)
-    // ]).then(([mat, _tState]) => {
-    //   var tasks = mat.catalog[0].problems.map((v, i) => [v, i]).filter(v => props.types[v[0].type]);
-    //   var tState = (_tState ?? new Array(mat.catalog[0].problems.length).fill(0));
-    //   if (typeof tState == "string") {
-    //     tState = tState.split(' ');
-    //     app.File.keep(`/static/tasks-state/${ UID }`, tState);
-    //   }
-    //   if (props.random) {
-    //     tasks.sort((a, b) => tState[a[1]] == tState[b[1]] ? Math.random() - 0.5 : tState[a[1]] - tState[b[1]]);
-    //   }
-    //   if (!props.allTasks) {
-    //     tasks = tasks.slice(0, props.tasksCount);
-    //   }
-    //   setState({ ...state, tasks, tasksCount: tasks.length });
-    // });
   }, []);
 
   React.useLayoutEffect(() => {

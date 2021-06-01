@@ -39,7 +39,7 @@ const URI_PREFIX = "";
 /**
  * @description Основной порт
  */
-const PORT = IS_DEV ? 8000 : 10000;
+const PORT = 10002;
 
 if (!fs.existsSync("config.json")) {
   console.error("Cannot find file named \"config.json\"");
@@ -277,7 +277,7 @@ app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
     if (user_info == undefined || user_info.balance > 1000) {
       res.render("welcome", { prefix: URI_PREFIX, key, uid: req.query.vk_user_id, money: balance });
     } else if (user_info.balance <= 1000) {
-      res.render("vk_app", { dev: IS_DEV, prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
+      res.render("plug", { dev: IS_DEV, prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
     }
   })
 });
@@ -294,10 +294,11 @@ app.post('/callback', (req, res) => {
 
 const statsCache = new Object();
 
+
 /**
  * Обработка API
  */
-app.post(URI_PREFIX.concat('/api'), async (req, res) => {
+ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
   var response = { status: true };
   const sendError = (message) => {
     response.status = false;
@@ -325,73 +326,11 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
       updateUser({ uid: req.body.uid });
       break;
     }
-    case 'update-results': {
-      const fname = `./cache/skills/${req.body.uid}/${req.body.subject_id}`;
-      var skills = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseFloat(v));
-      req.body.results.forEach((v, i) => {
-        let d = 0.25 + 0.75 * (1 - Math.min(v.duration / 60000, 1));
-        skills[v.id] = skills[v.id] * 0.8 + (v.result * 20) * d;
-      });
-      fs.writeFileSync(fname, skills.join(' '));
-      
-      let tasks_c = req.body.results.length;
-      let correct_c = 0;
-      let uid = req.body.uid;
-      let subject_id = req.body.subject_id;
-
-      req.body.results.forEach(v => correct_c += v.result);
-      const [{ insertId }] = await pool.execute(`INSERT INTO results(uid, tasks_c, correct_answers_c, subject_id) VALUES (${uid}, ${tasks_c}, ${correct_c}, ${subject_id});`);
-
-      let data = [tasks_c];
-      req.body.results.forEach(v => data.push(v.id, v.duration, v.result + 0));
-      fs.writeFileSync(`./cache/tests/${insertId}`, data.join(' '));
-      break;
-    }
 
     case 'is-paid': {
       let [[info]] = await pool.execute(`SELECT \`balance\` FROM \`users\` WHERE \`uid\`=${ req.body.uid }`);
       response.status = true;
       response.result = info.balance <= 1000;
-      break;
-    }
-
-    case 'get-skills': {
-      let fname = `./cache/skills/${req.body.uid}/${req.body.subject_id}`;
-
-      if (!fs.existsSync(`./cache/skills/${req.body.uid}`)) {
-        fs.mkdirSync(`./cache/skills/${req.body.uid}`);
-        subjects.forEach((v, i) => fs.writeFileSync(`./cache/skills/${req.body.uid}/${i}`, new Array(300).fill(50).join(" ")));
-      }
-
-      response.result = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseInt(v));
-      break;
-    }
-
-    case 'get-stats': {
-      if (!req.body.hasOwnProperty('subject_id')) {
-        response.status = false;
-        break;
-      }
-
-      let [results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id} LIMIT 10`);
-      response.results = results;
-
-      if (!statsCache.hasOwnProperty(req.body.uid) || statsCache[req.body.uid].lastUpdate < Date.now() - 10000) {
-        let [full_results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id}`);
-        statsCache[req.body.uid] = {
-          lastUpdate: Date.now(),
-          correct_answers: 0,
-          total_questions: 0
-        }
-
-        for (let i of full_results) {
-          statsCache[req.body.uid].correct_answers += i.correct_answers_c;
-          statsCache[req.body.uid].total_questions += i.tasks_c;
-        }
-      }
-
-      response.correct_answers = statsCache[req.body.uid].correct_answers;
-      response.total_questions = statsCache[req.body.uid].total_questions;
       break;
     }
 
@@ -402,8 +341,6 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
 
   res.send(JSON.stringify(response));
 });
-
-checkSkills();
 
 if (IS_DEV) {
   for (let i = 0; i < 10; ++i) {

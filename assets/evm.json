@@ -176,7 +176,7 @@
      },
      {
         "id": "15",
-        "question": "Полный путь к файлу: c:\books\raskaz.txt . Каково имя файла?",
+        "question": "Полный путь к файлу: c:\\books\\raskaz.txt . Каково имя файла?",
         "options": [
            "raskaz.txt",
            "books\\raskaz.txt",
@@ -674,8 +674,8 @@
            "Дисплей",
            "Сканер"
         ],
-        "answer":"",
-        "type":"select"
+        "answer":"3",
+        "type":"radio"
      },
      {
         "id":"56",
