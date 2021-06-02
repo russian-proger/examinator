@@ -32,8 +32,10 @@ import Icon28DoorArrowLeftOutline from '@vkontakte/icons/dist/28/door_arrow_left
 
 import Icon28CancelCircleFillRed from '@vkontakte/icons/dist/28/cancel_circle_fill_red';
 import Icon28CheckCircleFill from '@vkontakte/icons/dist/28/check_circle_fill';
+import "./../../../../node_modules/katex/dist/katex.min.css";
 
 import { copyObj } from './../../core/Utils';
+import { HtmlKatex } from './../TaskElements';
 
 export default function SingleTesting(props) {
   const app = React.useContext(CoreProvider);
@@ -57,7 +59,7 @@ export default function SingleTesting(props) {
 
     let tasks = Object.create(props.tasks.catalog).map(v => copyObj(v)).sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
       return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
-    }).filter(v => v.id == "48").slice(0, tasksCount);
+    }).slice(0, tasksCount);
 
 
     const close = () => {
@@ -159,7 +161,7 @@ export default function SingleTesting(props) {
             background: '#c6e2f9'
           }}>
             <Text weight="medium">
-              <span dangerouslySetInnerHTML={{ __html: `${(state.tasks[state.currentTask].id)}. ` + state.tasks[state.currentTask].question }}></span>
+              <HtmlKatex text={`${(state.tasks[state.currentTask].id)}. ` + state.tasks[state.currentTask].question} />
             </Text>
           </div>
         </Div>
@@ -269,7 +271,7 @@ function T_Order({ problem, id, onReply, replied }) {
                 : null
               }
               >
-                <span dangerouslySetInnerHTML={{ __html: problem.options[v] }}></span>
+                <HtmlKatex text={problem.options[i]} />
               </Cell>
             ))}
           </SSRWrapper >
@@ -309,7 +311,7 @@ function T_Input({ problem, id, onReply, replied }) {
   <>
     <FormLayout>
       <FormItem top="Введите правильный ответ">
-        <Input onChange={ (ev) => !replied && setAnswer(ev.target.value) } className={ replied ? (problem.answer.indexOf(answer) != -1 ? 'correct' : 'incorrect') : '' }
+        <Input onChange={ (ev) => !replied && setAnswer(ev.target.value.trim()) } className={ replied ? (problem.answer.indexOf(answer) != -1 ? 'correct' : 'incorrect') : '' }
           style={{ background: replied ? (problem.answer.indexOf(answer) != -1 ? "#a5d6a7" : "#ef9a9a") : "transparent", border: `${ replied ? 1 : 0 }px solid #e3e4e6`, borderRadius: 9 }}
         />
       </FormItem>
@@ -361,7 +363,7 @@ function T_Radio({ problem, id, onReply, replied }) {
             <Radio name="test" key={ i } checked={ answer == i }
               onChange={ (ev) => ev.target.checked && setAnswer(replied ? answer : i) }
               style={{ background: replied && (problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : (answer == i ? "#ef9a9a" : "transparent")) }}
-            ><span dangerouslySetInnerHTML={{ __html: problem.options[i] }}></span></Radio>
+            ><HtmlKatex text={problem.options[i]} /></Radio>
           );
         })
         }
@@ -408,7 +410,7 @@ function T_Select({ problem, id, onReply, replied }) {
             <Checkbox key={ i } checked={ answer[i] }
               onChange={ (ev) => setAnswer([...answer.slice(0, i), replied ? answer[i] : ev.target.checked, ...answer.slice(i + 1)]) }
               style={{ background: replied && problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}>
-                <span dangerouslySetInnerHTML={{ __html: problem.options[i] }}></span>
+                <HtmlKatex text={problem.options[i]} />
             </Checkbox>
           )
         })

@@ -18,6 +18,7 @@ import {
   Panel,
   PanelHeader,
   PanelHeaderBack,
+  PanelHeaderButton,
   PanelSpinner,
   Radio,
   Slider,
@@ -25,6 +26,8 @@ import {
 } from '@vkontakte/vkui';
 
 const subject_names = ["ЭВМ", "Интегралы", "Теория Информации"];
+
+import { Icon28BookOutline } from '@vkontakte/icons';
 
 import { subjects } from './../../../../assets/robots';
 
@@ -49,11 +52,17 @@ export default function TestMenu(props) {
     })
   }, []);
 
-  
+  function openTheory() {
+    console.log("open theory");
+    app.Event.dispatchEvent("openpanel", ["theory", { materials: state.tasks, subject_id: props.subject_id }])
+  }
 
   return (
     <Panel id={ props.id }>
-      <PanelHeader left={ <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } /> }>{ subject_names[props.subject_id] }</PanelHeader>
+      <PanelHeader left={ <>
+        <PanelHeaderBack onClick={ () => app.Event.dispatchEvent("closepanel") } />
+        <PanelHeaderButton onClick={ openTheory }><Icon28BookOutline /></PanelHeaderButton>
+      </>}>{ subject_names[props.subject_id] }</PanelHeader>
 
       {state.fetching ? <PanelSpinner /> : null}
 

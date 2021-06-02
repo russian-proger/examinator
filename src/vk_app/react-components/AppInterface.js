@@ -7,7 +7,6 @@ import { AppRoot, View, Panel, PanelHeader, PanelHeaderBack, Group, Cell, Header
 // Панели
 import Main from './panels/Main';
 import Theory from './panels/Theory';
-import VTheory from './panels/VTheory';
 import TestMenu from './panels/TestMenu';
 import SingleTesting from './panels/SingleTesting';
 import SingleResult from './panels/SingleResult';
@@ -86,9 +85,8 @@ export default function AppInterface(_props) {
     <AppRoot>
       <View id="main" activePanel={ state.activePanel } history={ state.history } onSwipeBack={ closePanel } popout={ state.popout }>
         <Main          id="main"           {...(state.props['main']           ?? {})} />
-        <Theory        id="theory"         {...(state.props['theory']         ?? {})} />
-        <VTheory       id="v-theory"       {...(state.props['v-theory']       ?? {})} />
         <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
+        <Theory        id="theory"         {...(state.props['theory']         ?? {})} />
         <SingleTesting id="testing"        {...(state.props['testing'] ?? {})} />
         <SingleResult  id="single-result"  {...(state.props['single-result']  ?? {})} />
       </View>

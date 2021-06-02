@@ -4,6 +4,7 @@ import { CoreProvider } from '../../core/AppEngine';
 import './SingleResult.sass';
 import { Panel, PanelHeader, Counter, Group, Cell, PanelHeaderBack, FormItem, Button, Alert, Div, Progress, Text, FormLayout, Radio, Checkbox, FixedLayout, Input, List, Footer } from '@vkontakte/vkui';
 
+import { HtmlKatex } from './../TaskElements';
 
 export default function TestMenu(props) {
   const app = React.useContext(CoreProvider);
@@ -40,7 +41,7 @@ export default function TestMenu(props) {
       result: props.results[i]
     }));
 
-    app.Network.sendResults(props.subject_id, results);
+    app.Network.sendResults(props.subject_id, results.slice(0, props.tasksCount));
   }, []);
 
   function onFilter(index, val) {
@@ -74,7 +75,7 @@ export default function TestMenu(props) {
               background: props.results[v] ? "#a5d6a7" : "#ef9a9a"
             }}>
               <Text weight="medium">
-                <span dangerouslySetInnerHTML={{ __html: `${props.tasks[v].id}. ` + props.tasks[v].question }}></span>
+                <HtmlKatex text={`${props.tasks[v].id}. ` + props.tasks[v].question} />
               </Text>
             </div>
             
@@ -143,7 +144,7 @@ function T_Order({ problem, answer, result }) {
               <Counter mode={ problem.answer.indexOf(v.toString()) == i ? "primary" : "prominent" } style={{ marginRight: 10 }}>{ problem.answer.indexOf(v.toString()) + 1 }</Counter>
             }
             >
-              <span dangerouslySetInnerHTML={{ __html: problem.options[v] }}></span>
+              <HtmlKatex text={v} />
             </Cell>
           ))}
         </List>
@@ -180,7 +181,7 @@ function T_Radio({ problem, answer, result }) {
           <Radio name="test" key={ i } checked={ answer == i }
             onChange={ forceUpdate }
             style={{ background: problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}
-          ><span dangerouslySetInnerHTML={{ __html: v }}></span></Radio>
+          ><HtmlKatex text={v} /></Radio>
         ))
         }
       </FormItem>
@@ -198,7 +199,7 @@ function T_Select({ problem, answer, result }) {
           <Checkbox key={ i } checked={ answer.indexOf(i) != -1 }
             onChange={ forceUpdate }
             style={{ background: problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}>
-              <span dangerouslySetInnerHTML={{ __html: v }}></span>
+              <HtmlKatex text={v} />
           </Checkbox>
         ))
         }
