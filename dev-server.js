@@ -343,7 +343,7 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
       const [{ insertId }] = await pool.execute(`INSERT INTO results(uid, tasks_c, correct_answers_c, subject_id) VALUES (${uid}, ${tasks_c}, ${correct_c}, ${subject_id});`);
 
       let data = [tasks_c];
-      req.body.results.forEach(v => data.push(v.id, v.duration, v.result + 0));
+      req.body.results.forEach(v => data.push(v.id, v.answer, v.duration, v.result + 0));
       fs.writeFileSync(`./cache/tests/${insertId}`, data.join(' '));
       break;
     }

@@ -39,7 +39,7 @@ const URI_PREFIX = "";
 /**
  * @description Основной порт
  */
-const PORT = 10000;
+const PORT = 10000 + IS_DEV;
 
 if (!fs.existsSync("config.json")) {
   console.error("Cannot find file named \"config.json\"");
@@ -254,6 +254,7 @@ app.use(bodyParser.json());
 
 
 // Публичная версия приложения (стабильная)
+app.get('/', (req, res) => {res.sendStatus(200)});
 app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
   const signStatus = req.query.sign == getSign(req.query);
   if (!signStatus) return res.sendStatus(404);
@@ -342,7 +343,7 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
       const [{ insertId }] = await pool.execute(`INSERT INTO results(uid, tasks_c, correct_answers_c, subject_id) VALUES (${uid}, ${tasks_c}, ${correct_c}, ${subject_id});`);
 
       let data = [tasks_c];
-      req.body.results.forEach(v => data.push(v.id, v.duration, v.result + 0));
+      req.body.results.forEach(v => data.push(v.id, v.answer, v.duration, v.result + 0));
       fs.writeFileSync(`./cache/tests/${insertId}`, data.join(' '));
       break;
     }
@@ -402,11 +403,6 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
   res.send(JSON.stringify(response));
 });
 
-app.get('/is-stable', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.sendStatus(200);
-})
-
 checkSkills();
 
 if (IS_DEV) {
@@ -418,3 +414,4 @@ if (IS_DEV) {
 // Запуск сервера
 const server = http.createServer(app);
 server.listen(PORT);
+console.log(`Server is started at port ${ PORT }`)

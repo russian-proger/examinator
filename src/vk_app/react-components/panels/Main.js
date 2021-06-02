@@ -31,8 +31,8 @@ export default function Main(props) {
       { state.activeTab == 'groups' &&
         <Group header={ <Header mode="secondary">Выберите предмет</Header> }>
           <CellButton onClick={ openTest(0) } expandable={true}>ЭВМ</CellButton>
-          {/* <CellButton onClick={ openTest(1) } expandable={true}>Интегралы</CellButton>
-          <CellButton onClick={ openTest(2) } expandable={true}>Теория информации</CellButton> */}
+          {/* <CellButton onClick={ openTest(1) } expandable={true}>Интегралы</CellButton> */}
+          {/* <CellButton onClick={ openTest(2) } expandable={true}>Теория информации</CellButton> */}
         </Group>
       }
 

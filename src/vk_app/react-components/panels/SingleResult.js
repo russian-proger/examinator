@@ -2,7 +2,7 @@ import React from 'react';
 import { CoreProvider } from '../../core/AppEngine';
 
 import './SingleResult.sass';
-import { Panel, PanelHeader, Counter, Group, Cell, PanelHeaderBack, Button, Alert, Div, Progress, Text, FormLayout, FormLayoutGroup, Radio, Checkbox, FixedLayout, Input, List, Footer } from '@vkontakte/vkui';
+import { Panel, PanelHeader, Counter, Group, Cell, PanelHeaderBack, FormItem, Button, Alert, Div, Progress, Text, FormLayout, Radio, Checkbox, FixedLayout, Input, List, Footer } from '@vkontakte/vkui';
 
 
 export default function TestMenu(props) {
@@ -36,6 +36,7 @@ export default function TestMenu(props) {
     let results = props.tasks.map((v, i) => ({
       id: v.id,
       duration: props.durations[i],
+      answer: props.answers[i],
       result: props.results[i]
     }));
 
@@ -57,20 +58,20 @@ export default function TestMenu(props) {
         <h3>Результат: { parseInt(score) } из { props.tasksCount } ({ (score / props.tasksCount * 100).toFixed(1) }%)</h3>
       </Div>
       <FormLayout>
-        <FormLayoutGroup>
+        <FormItem>
           <Checkbox checked={ state.resultsFilter[0] } onChange={ (ev) => onFilter(0, ev.target.checked) }>Неправильные ответы</Checkbox>
           <Checkbox checked={ state.resultsFilter[1] } onChange={ (ev) => onFilter(1, ev.target.checked) }>Правильные ответы</Checkbox>
-        </FormLayoutGroup>
+        </FormItem>
       </FormLayout>
       { tasks.map(v => (
         <div key={v} className="task_container">
           <Div>
             <div style={{
               padding: '15px 10px',
-              border: '2px solid #a9d5f9',
+              border: '2px solid black',
               borderTopWidth: 0,
               borderLeftWidth: 0,
-              background: '#c6e2f9'
+              background: props.results[v] ? "#a5d6a7" : "#ef9a9a"
             }}>
               <Text weight="medium">
                 <span dangerouslySetInnerHTML={{ __html: `${props.tasks[v].id}. ` + props.tasks[v].question }}></span>
@@ -79,7 +80,7 @@ export default function TestMenu(props) {
             
             { props.tasks[v].picture &&
               <Div style={{ display: 'flex', justifyContent: 'center', width: '100%', boxSizing: 'border-box' }}>
-                <T_Image src={`/static/images/${props.subject_id}/${props.tasks[v].picture}`} />
+                <T_Image src={`/static/pictures/${props.subject_id}/${props.tasks[v].picture}`} />
               </Div>
             }
 
@@ -133,7 +134,7 @@ function T_Order({ problem, answer, result }) {
 
   return (
     <FormLayout>
-      <FormLayoutGroup>
+      <FormItem>
         <List>
           { answer.map((v, i) => (
             <Cell key={v}
@@ -146,7 +147,7 @@ function T_Order({ problem, answer, result }) {
             </Cell>
           ))}
         </List>
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
   );
 }
@@ -156,11 +157,10 @@ function T_Input({ problem, answer, result }) {
   return (
   <>
     <FormLayout>
-      <FormLayoutGroup>
-        <Input defaultValue={ answer }
-          style={{ background: problem.answer.indexOf(answer) != -1 ? "#a5d6a7" : "#ef9a9a", border: `1px solid #e3e4e6`, borderRadius: 9 }}
+      <FormItem>
+        <Input defaultValue={ answer } disabled={true} className="input-c"
         />
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
 
     
@@ -175,7 +175,7 @@ function T_Radio({ problem, answer, result }) {
   const [_, forceUpdate] = React.useReducer(x => x + 1, 1);
   return (
     <FormLayout>
-      <FormLayoutGroup>
+      <FormItem>
         { problem.options.map((v, i) => (
           <Radio name="test" key={ i } checked={ answer == i }
             onChange={ forceUpdate }
@@ -183,17 +183,17 @@ function T_Radio({ problem, answer, result }) {
           ><span dangerouslySetInnerHTML={{ __html: v }}></span></Radio>
         ))
         }
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
   );
 }
 
 function T_Select({ problem, answer, result }) {
   const [_, forceUpdate] = React.useReducer(x => x + 1, 1);
-
+  console.log(answer);
   return (
     <FormLayout>
-      <FormLayoutGroup>
+      <FormItem>
       { problem.options.map((v, i) => (
           <Checkbox key={ i } checked={ answer.indexOf(i) != -1 }
             onChange={ forceUpdate }
@@ -202,7 +202,7 @@ function T_Select({ problem, answer, result }) {
           </Checkbox>
         ))
         }
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
   );
 }

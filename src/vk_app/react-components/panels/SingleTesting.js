@@ -17,10 +17,10 @@ import {
   Progress,
   Text,
   FormLayout,
-  FormLayoutGroup,
   Radio,
   Checkbox,
   FixedLayout,
+  FormItem,
   Input,
   List,
   Footer,
@@ -57,8 +57,7 @@ export default function SingleTesting(props) {
 
     let tasks = Object.create(props.tasks.catalog).map(v => copyObj(v)).sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
       return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
-    }).filter(v => v.id == "66").slice(0, tasksCount);
-    console.log(tasks);
+    }).filter(v => v.id == "48").slice(0, tasksCount);
 
 
     const close = () => {
@@ -253,7 +252,7 @@ function T_Order({ problem, id, onReply, replied }) {
   return (
   <>
     <FormLayout>
-      <FormLayoutGroup top="Укажите верный порядок">
+      <FormItem top="Укажите верный порядок">
         <List>
           <SSRWrapper userAgent="android">
             { answer.map((v, i) => (
@@ -275,7 +274,7 @@ function T_Order({ problem, id, onReply, replied }) {
             ))}
           </SSRWrapper >
         </List>
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
 
     {!replied && 
@@ -309,11 +308,11 @@ function T_Input({ problem, id, onReply, replied }) {
   return (
   <>
     <FormLayout>
-      <FormLayoutGroup top="Введите правильный ответ">
-        <Input onChange={ (ev) => !replied && setAnswer(ev.target.value) }
+      <FormItem top="Введите правильный ответ">
+        <Input onChange={ (ev) => !replied && setAnswer(ev.target.value) } className={ replied ? (problem.answer.indexOf(answer) != -1 ? 'correct' : 'incorrect') : '' }
           style={{ background: replied ? (problem.answer.indexOf(answer) != -1 ? "#a5d6a7" : "#ef9a9a") : "transparent", border: `${ replied ? 1 : 0 }px solid #e3e4e6`, borderRadius: 9 }}
         />
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
 
     {replied &&
@@ -355,18 +354,18 @@ function T_Radio({ problem, id, onReply, replied }) {
   return (
   <>
     <FormLayout>
-      <FormLayoutGroup top="Выберите один правильный ответ">
+      <FormItem top="Выберите один правильный ответ">
         { problem.options.map((v, _i) => {
           const i = conv[_i];
           return (
             <Radio name="test" key={ i } checked={ answer == i }
               onChange={ (ev) => ev.target.checked && setAnswer(replied ? answer : i) }
-              style={{ background: replied && problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : "transparent" }}
+              style={{ background: replied && (problem.answer.indexOf(i.toString()) != -1 ? "#c8e6c9" : (answer == i ? "#ef9a9a" : "transparent")) }}
             ><span dangerouslySetInnerHTML={{ __html: problem.options[i] }}></span></Radio>
           );
         })
         }
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
 
     {!replied && 
@@ -402,7 +401,7 @@ function T_Select({ problem, id, onReply, replied }) {
   return (
   <>
     <FormLayout>
-      <FormLayoutGroup top="Выберите несколько правильных ответов">
+      <FormItem top="Выберите несколько правильных ответов">
       { problem.options.map((v, _i) => {
           const i = conv[_i];
           return (
@@ -414,7 +413,7 @@ function T_Select({ problem, id, onReply, replied }) {
           )
         })
         }
-      </FormLayoutGroup>
+      </FormItem>
     </FormLayout>
     {!replied && 
       <FixedLayout vertical="bottom">
