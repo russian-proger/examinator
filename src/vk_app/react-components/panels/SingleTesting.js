@@ -271,7 +271,7 @@ function T_Order({ problem, id, onReply, replied }) {
                 : null
               }
               >
-                <HtmlKatex text={problem.options[i]} />
+                <HtmlKatex text={problem.options[v]} />
               </Cell>
             ))}
           </SSRWrapper >

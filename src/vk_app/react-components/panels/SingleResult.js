@@ -144,7 +144,7 @@ function T_Order({ problem, answer, result }) {
               <Counter mode={ problem.answer.indexOf(v.toString()) == i ? "primary" : "prominent" } style={{ marginRight: 10 }}>{ problem.answer.indexOf(v.toString()) + 1 }</Counter>
             }
             >
-              <HtmlKatex text={v} />
+              <HtmlKatex text={problem.options[v]} />
             </Cell>
           ))}
         </List>
