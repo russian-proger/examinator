@@ -43,6 +43,12 @@ export default function Main(props) {
         </div>
       }
 
+      { state.activeTab == 'events' &&
+        <div className="events-tab">
+
+        </div>
+      }
+
       <FixedLayout filled vertical="bottom">
         <Separator wide />
         <Tabs>
@@ -51,10 +57,10 @@ export default function Main(props) {
             onClick={() => setState({ activeTab: 'groups' })}
           >Тесты</TabsItem>
 
-          {/* <TabsItem
+          <TabsItem
             selected={state.activeTab === 'events'}
             onClick={() => setState({ activeTab: 'events' })}
-          >Статистика</TabsItem> */}
+          >Статистика</TabsItem>
         </Tabs>
       </FixedLayout>
     </Panel>
