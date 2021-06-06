@@ -36,7 +36,7 @@ function Problem(props) {
   return (
     <div className="problem">
       <Div style={{ background: "#f5fafd", border: '2px solid #dbf0f1' }}>
-        <Text weight="medium">Вопрос №{ props.index + 1 }: <HtmlKatex text={props.problem.question} /></Text>
+        <Text weight="medium">Вопрос №{ props.problem.id }: <HtmlKatex text={props.problem.question} /></Text>
       </Div>
       { props.problem.type == "text" &&
         <Div>
@@ -73,7 +73,8 @@ function Problem(props) {
             <div style={{
                 backgroundColor: props.problem.answer.indexOf(i.toString()) != -1 ? "#a5d6a7" : "transparent",
                 border: '1px solid #505050',
-                borderBottomWidth: i == props.problem.options.length - 1 ? '1px' : '0'
+                borderBottomWidth: i == props.problem.options.length - 1 ? '1px' : '0',
+                padding: 2
               }}
               key={ i }>
               <HtmlKatex text={v} />

@@ -87,7 +87,7 @@ export default function AppInterface(_props) {
         <Main          id="main"           {...(state.props['main']           ?? {})} />
         <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
         <Theory        id="theory"         {...(state.props['theory']         ?? {})} />
-        <SingleTesting id="testing"        {...(state.props['testing'] ?? {})} />
+        <SingleTesting id="testing"        {...(state.props['testing']        ?? {})} />
         <SingleResult  id="single-result"  {...(state.props['single-result']  ?? {})} />
       </View>
     </AppRoot>

@@ -61,6 +61,9 @@ export default function SingleTesting(props) {
       return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
     }).slice(0, tasksCount);
 
+    // IN DEV MODE
+    // let offset = 0;
+    // tasks = Object.create(props.tasks.catalog).map(v => copyObj(v)).filter(v => parseInt(v.id) >= offset).slice(0, tasksCount);
 
     const close = () => {
       app.Event.dispatchEvent("closepopout");
@@ -138,6 +141,7 @@ export default function SingleTesting(props) {
   const tasksLeft = state.tasksCount - state.currentTask - state.replied;
 
   return (
+    // No comments...
     <Panel id={ props.id } className="single-testing-panel">
       <PanelHeader left={
         <PanelHeaderButton onClick={ openExit }><Icon28DoorArrowLeftOutline/></PanelHeaderButton>

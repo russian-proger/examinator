@@ -3,6 +3,9 @@ import { AppCore, CoreProvider } from '../../core/AppEngine';
 
 import { FixedLayout, Tabs, TabsItem, Separator, Button, Div, Panel, PanelHeader, Header, CellButton, Group, PanelHeaderButton } from '@vkontakte/vkui';
 import { Icon28RefreshOutline } from '@vkontakte/icons';
+
+import "./Main.sass";
+
 /** 
  * @param {Object} props
  * @param {CallableFunction} props.openPanel
@@ -29,11 +32,15 @@ export default function Main(props) {
       >Экзаменатор</PanelHeader>
 
       { state.activeTab == 'groups' &&
-        <Group header={ <Header mode="secondary">Выберите предмет</Header> }>
-          <CellButton onClick={ openTest(0) } expandable={true}>ЭВМ</CellButton>
-          {/* <CellButton onClick={ openTest(1) } expandable={true}>Интегралы</CellButton> */}
-          <CellButton onClick={ openTest(2) } expandable={true}>Теория информации</CellButton>
-        </Group>
+        <div className="groups-tab">
+          <div className="first-row flex-row">
+            <SubjectButton onClick={ openTest(0) } subject_id={ 0 } date="04.06.2021" descr="ЭВМ"/>
+            <SubjectButton onClick={ openTest(1) } subject_id={ 1 } date="08.06.2021" descr="Интегралы"/>
+          </div>
+          <div className="second-row flex-center">
+            <SubjectButton onClick={ openTest(2) } subject_id={ 2 } date="15.06.2021" descr="Теория информации"/>
+          </div>
+        </div>
       }
 
       <FixedLayout filled vertical="bottom">
@@ -51,5 +58,21 @@ export default function Main(props) {
         </Tabs>
       </FixedLayout>
     </Panel>
+  );
+}
+
+function SubjectButton({ subject_id, onClick, descr, date }) {
+  return (
+    <div className="subject-button">
+      <div onClick={ onClick } className={`btn-icon icon-${subject_id}`}>
+
+      </div>
+      <div className="descr">
+        <span>{ descr }</span>
+      </div>
+      <div className="date">
+        <span>{ date }</span>
+      </div>
+    </div>
   );
 }

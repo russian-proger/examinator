@@ -1,0 +1,59 @@
+.groups-tab
+
+  & > .first-row
+    margin-top: 100px
+    margin-bottom: 70px
+
+  .flex-row
+    display: flex
+    width: 100%
+    justify-content: space-evenly
+
+  .flex-center
+    display: flex
+    width: 100%
+    justify-content: center
+
+  .subject-button
+    display: flex
+    flex-direction: column
+    align-items: center
+
+    .descr
+      color: var(--text_secondary)
+      margin-top: 5px
+      font-size: 13pt
+
+    .date
+      color: gray
+      
+
+    .btn-icon
+      width: 20vw
+      height: 20vw
+      min-width: 100px
+      min-height: 100px
+
+      &.icon-0
+        background-image: url('/static/pictures/evm.svg')
+
+      &.icon-1
+        background-image: url('/static/pictures/integral.svg')
+
+      &.icon-2
+        background-image: url('/static/pictures/inf.svg')
+
+      background-size: 100% 100%
+      background-position: center center
+      background-repeat: no-repeat
+      background-color: #4caf50
+      border-radius: 50%
+
+      transition: all .1s linear
+      cursor: pointer
+
+      &:hover
+        background-color: #43a047
+
+      &:active
+        background-color: #388e3c
