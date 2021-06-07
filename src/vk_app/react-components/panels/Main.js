@@ -45,7 +45,7 @@ export default function Main(props) {
 
       { state.activeTab == 'events' &&
         <div className="events-tab">
-
+          <h2 style={{textAlign: 'center'}}>Здесь будут ваши последние решённые тесты...</h2>
         </div>
       }
 
