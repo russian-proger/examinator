@@ -57,9 +57,15 @@ export default function SingleTesting(props) {
 
     let tasksCount = props.allTasks ? props.tasks.catalog.length : props.tasksCount;
 
-    let tasks = Object.create(props.tasks.catalog).map(v => copyObj(v)).sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
+    let tasks = Object.create(props.tasks.catalog).map(v => copyObj(v))
+    if (props.tasks.separated)
+      tasks = tasks.filter(v => props.categories[v.category]);
+
+
+    tasks = tasks.sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
       return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
     }).slice(0, tasksCount);
+    tasksCount = tasks.length;
 
     // IN DEV MODE
     // let offset = 0;

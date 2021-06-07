@@ -83,7 +83,7 @@ export default function AppInterface(_props) {
 
   return (
     <AppRoot>
-      <View id="main" activePanel={ state.activePanel } history={ state.history } onSwipeBack={ closePanel } popout={ state.popout }>
+      <View id="main" activePanel={ state.activePanel } history={ state.history } popout={ state.popout }>
         <Main          id="main"           {...(state.props['main']           ?? {})} />
         <TestMenu      id="test-menu"      {...(state.props['test-menu']      ?? {})} />
         <Theory        id="theory"         {...(state.props['theory']         ?? {})} />

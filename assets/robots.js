@@ -1,1 +1,1 @@
-export const subjects = ["evm", "int2", "inf"];
+export const subjects = ["evm", "int", "inf"];

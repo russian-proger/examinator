@@ -20,7 +20,7 @@ export function HtmlKatex({ text }) {
     result = transform(result, /\$\$\$\$.+?\$\$\$\$/g, v => {
       let a = v.slice(4, -4).split('$');
       return `<a class="solve-link" href="${a.slice(1).join('$')}" target="_blank">${a[0]}</a>`;
-    });
+    }, []);
 
     return result;
   }, [text])
