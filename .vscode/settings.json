@@ -1,2 +1,4 @@
 {
+  "terminal.explorerKind": "external",
+  "workbench.panel.defaultLocation": "right"
 }

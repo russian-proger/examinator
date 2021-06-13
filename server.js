@@ -292,8 +292,6 @@ app.post('/callback', (req, res) => {
   res.sendStatus(200);
 })
 
-const statsCache = new Object();
-
 /**
  * Обработка API
  */
@@ -373,25 +371,17 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
         break;
       }
 
-      let [results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id} LIMIT 10`);
+      let [results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id} ORDER BY id DESC`);
+      response.counts = (await pool.execute(`
+        SELECT
+          SUM(tasks_c) AS tasks_c,
+          SUM(correct_answers_c) AS correct_answers_c,
+          AVG(tasks_c) AS avg_tasks_c,
+          AVG(correct_answers_c) AS avg_correct_answers_c
+        FROM results
+        WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id}`)
+      )[0][0];
       response.results = results;
-
-      if (!statsCache.hasOwnProperty(req.body.uid) || statsCache[req.body.uid].lastUpdate < Date.now() - 10000) {
-        let [full_results] = await pool.execute(`SELECT * FROM results WHERE uid=${req.body.uid} AND subject_id=${req.body.subject_id}`);
-        statsCache[req.body.uid] = {
-          lastUpdate: Date.now(),
-          correct_answers: 0,
-          total_questions: 0
-        }
-
-        for (let i of full_results) {
-          statsCache[req.body.uid].correct_answers += i.correct_answers_c;
-          statsCache[req.body.uid].total_questions += i.tasks_c;
-        }
-      }
-
-      response.correct_answers = statsCache[req.body.uid].correct_answers;
-      response.total_questions = statsCache[req.body.uid].total_questions;
       break;
     }
 
@@ -414,4 +404,4 @@ if (IS_DEV) {
 // Запуск сервера
 const server = http.createServer(app);
 server.listen(PORT);
-console.log(`Server is started at port ${ PORT }`)
+console.log(`Server is started at port ${ PORT }`);

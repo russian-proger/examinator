@@ -14,6 +14,8 @@ export default function FileSystem() {
     return cache.hasOwnProperty(url);
   }
 
+  this.getFromCache = (key) => cache[key];
+
   /**
    * 
    * @param {string} url path to file

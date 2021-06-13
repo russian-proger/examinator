@@ -1,8 +1,9 @@
 import React from 'react';
 import { AppCore, CoreProvider } from '../../core/AppEngine';
 
-import { FixedLayout, Tabs, TabsItem, Separator, Button, Div, Panel, PanelHeader, Header, CellButton, Group, PanelHeaderButton } from '@vkontakte/vkui';
+import { Badge, FixedLayout, Tabs, TabsItem, Separator, Button, Div, Panel, PanelHeader, Header, CellButton, Group, PanelHeaderButton } from '@vkontakte/vkui';
 import { Icon28RefreshOutline } from '@vkontakte/icons';
+import Statistics from './Statistics';
 
 import "./Main.sass";
 
@@ -44,9 +45,7 @@ export default function Main(props) {
       }
 
       { state.activeTab == 'events' &&
-        <div className="events-tab">
-          <h2 style={{textAlign: 'center'}}>Здесь будут ваши последние решённые тесты...</h2>
-        </div>
+        <Statistics key="qwer" />
       }
 
       <FixedLayout filled vertical="bottom">
@@ -60,6 +59,7 @@ export default function Main(props) {
           <TabsItem
             selected={state.activeTab === 'events'}
             onClick={() => setState({ activeTab: 'events' })}
+            after={<Badge mode="new" aria-label="Новый раздел" />}
           >Статистика</TabsItem>
         </Tabs>
       </FixedLayout>

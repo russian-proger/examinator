@@ -2490,10 +2490,10 @@
       "category": 10,
       "question": "Указав пределы интегрирования в интеграле ###\\int_D \\int f(x,y)dxdy###, где D: ###x^2+y^2\\leq x### получим повторный интеграл",
       "options": [
-        "###\\int_0^1 dx \\int+{-\\sqrt{x-x^2}}^{\\sqrt{x-x^2}} f(x,y)dy###",
-        "###\\int_{-1}^1 dx \\int+{-\\sqrt{x+x^2}}^{\\sqrt{x+x^2}} f(x,y)dy###",
-        "###\\int_0^1 dx \\int+{-\\sqrt{x+x^2}}^{\\sqrt{x+x^2}} f(x,y)dy###",
-        "###\\int_{-1}^1 dx \\int+{-\\sqrt{x-x^2}}^{\\sqrt{x-x^2}} f(x,y)dy###"
+        "###\\int_0^1 dx \\int_{-\\sqrt{x-x^2}}^{\\sqrt{x-x^2}} f(x,y)dy###",
+        "###\\int_{-1}^1 dx \\int_{-\\sqrt{x+x^2}}^{\\sqrt{x+x^2}} f(x,y)dy###",
+        "###\\int_0^1 dx \\int_{-\\sqrt{x+x^2}}^{\\sqrt{x+x^2}} f(x,y)dy###",
+        "###\\int_{-1}^1 dx \\int_{-\\sqrt{x-x^2}}^{\\sqrt{x-x^2}} f(x,y)dy###"
       ],
       "answer": "0",
       "type": "radio"

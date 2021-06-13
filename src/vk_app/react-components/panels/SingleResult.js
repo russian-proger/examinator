@@ -31,8 +31,7 @@ export default function TestMenu(props) {
   }
 
   React.useEffect(() => {
-    if (props.tasksCount == 0) return;
-    console.log(props);
+    if (props.tasksCount == 0 || props.fromStats) return;
 
     let results = props.tasks.map((v, i) => ({
       id: v.id,
@@ -191,7 +190,6 @@ function T_Radio({ problem, answer, result }) {
 
 function T_Select({ problem, answer, result }) {
   const [_, forceUpdate] = React.useReducer(x => x + 1, 1);
-  console.log(answer);
   return (
     <FormLayout>
       <FormItem>
