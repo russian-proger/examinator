@@ -62,8 +62,21 @@ export default function SingleTesting(props) {
       tasks = tasks.filter(v => props.categories[v.category]);
 
 
+    let max = Math.max(...props.freqs);
+
     tasks = tasks.sort((lhs, rhs) => Math.random() - 0.5).sort((lhs, rhs) => {
-      return props.skills[parseInt(lhs.id)] - props.skills[parseInt(rhs.id)];
+      let l = props.skills[parseInt(lhs.id)];
+      let r = props.skills[parseInt(rhs.id)];
+
+      if (max != 0) {
+        l *= (props.freqs[parseInt(lhs.id)]) / max;
+        r *= (props.freqs[parseInt(rhs.id)]) / max;
+      }
+
+      l *= Math.random() / 10 + 1;
+      r *= Math.random() / 10 + 1;
+
+      return l - r;
     }).slice(0, tasksCount);
     tasksCount = tasks.length;
 

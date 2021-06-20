@@ -24,4 +24,6 @@ export default function Network(self) {
   this.getSkills = (subject_id) => this.requestAPI({ action: 'get-skills', subject_id });
 
   this.getStats = (subject_id) => this.requestAPI({ action: 'get-stats', subject_id });
+
+  this.getFreqs = (subject_id) => this.requestAPI({ action: 'get-freqs', subject_id });
 }

@@ -59,8 +59,9 @@ export default function TestMenu(props) {
     
     Promise.all([
       app.File.loadFromURL(url, true, true, false),
-      app.Network.getSkills(props.subject_id)
-    ]).then( ([tasks, skills]) => {
+      app.Network.getSkills(props.subject_id),
+      app.Network.getFreqs(props.subject_id)
+    ]).then( ([tasks, skills, freqs]) => {
       let counts     = [];
       let categories = [];
 
@@ -71,7 +72,8 @@ export default function TestMenu(props) {
           counts[v.category]++;
         }
       }
-      setState({ ...state, categories, counts, tasks, skills: skills.result, fetching: false });
+
+      setState({ ...state, categories, counts, tasks, freqs: freqs.result, skills: skills.result, fetching: false });
     })
   }, []);
 
@@ -132,7 +134,12 @@ export default function TestMenu(props) {
       { state.tasks &&
         <FixedLayout vertical="bottom">
           <Div style={{background: '#ffffffaa'}}>
-            <Button mode="primary" stretched size="l" disabled={ state.tasks.separated ? (!state.allTasks && state.tasksCount < 5) || (state.allTasks && catTasksCount < 5) : (!state.allTasks && state.tasksCount < 5) } onClick={() => !state.fetching &&  app.Event.dispatchEvent('switchpanel', ["testing", { ...state, subject_id: props.subject_id }])}>Начать!</Button>
+            <Button mode="primary" stretched
+              size="l"
+              disabled={ state.tasks.separated ? (!state.allTasks && state.tasksCount < 5) || (state.allTasks && catTasksCount < 5) : (!state.allTasks && state.tasksCount < 5) }
+              onClick={() => !state.fetching &&  app.Event.dispatchEvent('switchpanel', ["testing", { ...state, subject_id: props.subject_id }])}
+              >Начать!
+            </Button>
           </Div>
         </FixedLayout>
       }

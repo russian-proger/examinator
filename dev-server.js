@@ -212,8 +212,9 @@ function getUserByID(uid) {
 /**
  * @description Проверяет папку skills в cache
  */
-function checkSkills() {
+function checkCache() {
   if (!fs.existsSync('./cache/skills')) fs.mkdirSync('./cache/skills');
+  if (!fs.existsSync('./cache/freqs')) fs.mkdirSync('./cache/freqs');
 }
 
 // ====================================================
@@ -282,6 +283,32 @@ app.get(URI_PREFIX.concat('/vk_app'), (req, res) => {
   })
 });
 
+
+app.get(URI_PREFIX.concat('/dev_secret_0'), (req, res) => {
+  getUserByID(req.query.vk_user_id).then(([[user_info]]) => {
+    var key;
+    if (user_info == undefined) {
+      key = insertUserIntoDB(req.query);
+    } else {
+      updateUser(req.query);
+      key = user_info.ukey;
+    }
+
+    let balance = isDiscountID(req.query.vk_user_id) ? DISCOUNT_SUM : REQUIRED_SUM;
+    if (user_info != undefined) {
+      balance = user_info.balance;
+    }
+
+    /**TODO */
+    if (user_info == undefined || user_info.balance > 1000) {
+      res.render("welcome", { prefix: URI_PREFIX, key, uid: req.query.vk_user_id, money: balance });
+    } else if (user_info.balance <= 1000) {
+      res.render("vk_app", { dev: IS_DEV, prefix: URI_PREFIX, key, uid: req.query.vk_user_id });
+    }
+  })
+});
+
+
 /**
  * Обработка оплаты
  */
@@ -324,14 +351,20 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
       break;
     }
     case 'update-results': {
-      const fname = `./cache/skills/${req.body.uid}/${req.body.subject_id}`;
-      var skills = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseFloat(v));
+      const s_fname = `./cache/skills/${req.body.uid}/${req.body.subject_id}`;
+      let skills = fs.readFileSync(s_fname).toString('utf8').split(' ').map(v => parseFloat(v));
       req.body.results.forEach((v, i) => {
         let d = 0.25 + 0.75 * (1 - Math.min(v.duration / 60000, 1));
         skills[v.id] = skills[v.id] * 0.8 + (v.result * 20) * d;
       });
-      fs.writeFileSync(fname, skills.join(' '));
+      fs.writeFileSync(s_fname, skills.join(' '));
       
+      const f_fname = `./cache/freqs/${req.body.uid}/${req.body.subject_id}`;
+      let freqs = fs.readFileSync(f_fname).toString('utf8').split(' ').map(v => parseFloat(v));
+      req.body.results.forEach(v => ++freqs[v.id]);
+      fs.writeFileSync(f_fname, freqs.join(' '));
+      
+
       let tasks_c = req.body.results.length;
       let correct_c = 0;
       let uid = req.body.uid;
@@ -354,14 +387,26 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
     }
 
     case 'get-skills': {
-      let fname = `./cache/skills/${req.body.uid}/${req.body.subject_id}`;
+      let fname = `./cache/skills/${req.body.uid}`;
 
-      if (!fs.existsSync(`./cache/skills/${req.body.uid}`)) {
-        fs.mkdirSync(`./cache/skills/${req.body.uid}`);
-        subjects.forEach((v, i) => fs.writeFileSync(`./cache/skills/${req.body.uid}/${i}`, new Array(300).fill(50).join(" ")));
+      if (!fs.existsSync(fname)) {
+        fs.mkdirSync(fname);
+        subjects.forEach((v, i) => fs.writeFileSync(`${fname}/${i}`, new Array(300).fill(50).join(" ")));
       }
 
-      response.result = fs.readFileSync(fname).toString('utf8').split(' ').map(v => parseInt(v));
+      response.result = fs.readFileSync(`${fname}/${req.body.subject_id}`).toString('utf8').split(' ').map(v => parseInt(v));
+      break;
+    }
+
+    case 'get-freqs': {
+      let fname = `./cache/freqs/${req.body.uid}`;
+
+      if (!fs.existsSync(fname)) {
+        fs.mkdirSync(fname);
+        subjects.forEach((v, i) => fs.writeFileSync(`${fname}/${i}`, new Array(300).fill(0).join(" ")));
+      }
+
+      response.result = fs.readFileSync(`${fname}/${req.body.subject_id}`).toString('utf8').split(' ').map(v => parseInt(v));
       break;
     }
 
@@ -386,25 +431,20 @@ app.post(URI_PREFIX.concat('/api'), async (req, res) => {
     }
 
     default: {
-      return sendError("Не указан параметр action");
+      return sendError("Параметр `action` некорректный");
     }
   }
 
   res.send(JSON.stringify(response));
 });
 
-checkSkills();
+checkCache();
 
 if (IS_DEV) {
   for (let i = 0; i < 10; ++i) {
     console.log("SERVER IS WORKING IN DEV MODE!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
 }
-
-app.get('/test', (req, res) => {
-  res.send("Hello");
-  res.end();
-})
 
 // Запуск сервера
 const server = http.createServer(app);

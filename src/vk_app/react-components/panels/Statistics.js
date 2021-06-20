@@ -172,6 +172,68 @@ export default function Statistics() {
     }
 
     /** @type {HTMLCanvasElement} */
+    const count_tests_canvas = document.getElementById("count_tests_chart");
+    if (count_tests_canvas != null) {
+      count_tests_canvas.width = window.innerWidth;
+      count_tests_canvas.height = count_tests_canvas.width * 0.6 + 140;
+      let context = count_tests_canvas.getContext('2d');
+
+      const results = stats.results.slice(0, 20).reverse();
+      const chart = new Chart(context, {
+        type: 'line',
+        data: {
+          labels: results.map(v => formatDate(v.date)),
+          datasets: [
+            {
+              label: 'Кол-во вопросов',
+              data: results.map(v => v.tasks_c),
+              borderJoinStyle: 'round',
+              borderColor: "#1e88e5",
+              backgroundColor: results.map(() => "#1e88e5"),
+              hidden: true
+            },
+            {
+              label: 'Правильные',
+              data: results.map(v => v.correct_answers_c),
+              borderJoinStyle: 'round',
+              borderColor: "#4caf50",
+              backgroundColor: results.map(() => "#4caf50"),
+            },
+            {
+              label: 'Неправильные',
+              data: results.map(v => v.tasks_c - v.correct_answers_c),
+              borderJoinStyle: 'round',
+              borderColor: "#f44336",
+              backgroundColor: results.map(() => "#f44336")
+            }
+          ]
+        },
+        options: {
+          elements: {
+            point: {
+              radius: 0
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: 20,
+            }
+          },
+          plugins: {
+            legend: {
+              position: "bottom",
+              fullSize: true,
+
+            }
+          }
+        }
+      });
+
+      destructors.push(() => chart.destroy());
+    }
+
+    /** @type {HTMLCanvasElement} */
     const last_ratio_canvas = document.getElementById("last_ratio_chart");
     if (last_ratio_canvas != null) {
       let context = last_ratio_canvas.getContext('2d');
@@ -222,6 +284,23 @@ export default function Statistics() {
         const results = new Array(tasksCount);
         const answers = new Array(tasksCount);
         const tasks = new Array(tasksCount);
+        
+        for (let i = 0; i < _tests.length; ++i) {
+          if (typeof _tests[i] == "string" && _tests[i][0] == "\"" && _tests[i][_tests[i].length - 1] != '"') {
+            let j = 1;
+            let s = _tests[i];
+            for (; j < _tests.length - i; ++j) {
+              s += _tests[i + j];
+              if (s[s.length - 1] == "\"") {
+                break;
+              }
+            }
+
+            if (j != 0) {
+              _tests.splice(i, j + 1, s);
+            }
+          }
+        }
 
         for (let i = 0; i < tasksCount; ++i) {
           let _i = i * 4;
@@ -246,6 +325,34 @@ export default function Statistics() {
     return <FormItem><Spinner /></FormItem>;
   }
 
+
+  const briefStats = (
+    <>
+    <div className="short-stats-wrapper">
+      <div className="short-stats-item success">
+        <span className="value">{stats.counts.correct_answers_c ?? 0}</span>
+        <span className="descr">Правильно</span>
+      </div>
+      <div className="short-stats-item mistake">
+        <span className="value"
+          >{stats.results.length == 0 ? 0 : parseInt(stats.counts.tasks_c) - parseInt(stats.counts.correct_answers_c)}</span>
+        <span className="descr">Неправильно</span>
+      </div>
+    </div>
+    <div className="short-stats-wrapper">
+      <div className="short-stats-item ratio">
+        <span className="value">{stats.results.length == 0 ? 0 : (parseInt(stats.counts.correct_answers_c) / parseInt(stats.counts.tasks_c) * 100).toFixed(1)}</span>
+        <span className="descr">% Верных</span>
+      </div>
+      <div className="short-stats-item total">
+        <span className="value"
+          >{stats.counts.tasks_c ?? 0}</span>
+        <span className="descr">Итого</span>
+      </div>
+    </div>
+    </>
+  );
+
   return (
     <PullToRefresh onRefresh={onRefresh} isFetching={isFetching}>
       <Group>
@@ -256,10 +363,16 @@ export default function Statistics() {
             options={["ЭВМ", "Интегралы", "Теория Информации"].map((label, value) => ({ label, value }))}
           />
         </FormItem>
-        {!isLoading && 
+        { stats.results.length == 0 &&
+          <>
+            <Spacing size={8} />
+            { briefStats }
+          </>
+        }
+        {!isLoading && stats.results.length != 0 &&
         <>
           <FormItem>
-            <Title level="2" weight="medium">Соотношение правильных ответов</Title>
+            <Title level="2" weight="medium">Краткая сводка</Title>
             <Spacing size={8} />
             <div className="flex-center">
               <div className="ratio-chart">
@@ -268,39 +381,26 @@ export default function Statistics() {
             </div>
           </FormItem>
           <Spacing size={8} />
-          <div className="short-stats-wrapper">
-            <div className="short-stats-item success">
-              <span className="value">{stats.counts.correct_answers_c}</span>
-              <span className="descr">Правильно</span>
-            </div>
-            <div className="short-stats-item mistake">
-              <span className="value"
-                >{parseInt(stats.counts.tasks_c) - parseInt(stats.counts.correct_answers_c)}</span>
-              <span className="descr">Неправильно</span>
-            </div>
-          </div>
-          <div className="short-stats-wrapper">
-            <div className="short-stats-item ratio">
-              <span className="value">{(parseInt(stats.counts.correct_answers_c) / parseInt(stats.counts.tasks_c) * 100).toFixed(1)}</span>
-              <span className="descr">% Верных</span>
-            </div>
-            <div className="short-stats-item total">
-              <span className="value"
-                >{stats.counts.tasks_c}</span>
-              <span className="descr">Итого</span>
-            </div>
-          </div>
+          { briefStats }
           <Spacing separator size={16} />
           <FormItem>
-            <Title level="2" weight="medium">Процент верных ответов за последние тесты</Title>
+            <Title level="2" weight="medium">Правильность ответов %</Title>
             <Spacing size={8} />
             <div className="flex-center">
               <canvas id="last_tests_chart" />
             </div>
           </FormItem>
+          <Spacing separator size={16} />
+          <FormItem>
+            {/* <Title level="2" weight="medium"></Title> */}
+            <Spacing size={8} />
+            <div id="count_tests_chart_wrapper" className="flex-center">
+              <canvas id="count_tests_chart" />
+            </div>
+          </FormItem>
           <Spacing size={16} />
           <FormItem>
-            <Title level="2" weight="medium">История решённых тестов</Title>
+            <Title level="2" weight="medium">Последние решённые тесты</Title>
           </FormItem>
           <div className="tests-list">
             <div className="tests-item top-item">
